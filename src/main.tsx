@@ -16,7 +16,9 @@ if (themeMeta) {
   themeMeta.setAttribute("content", bootTheme === "carbon" ? "#09080c" : "#f1ece4");
 }
 
-if (import.meta.env.PROD && import.meta.env.BASE_URL === "/") {
+// PWA plugin is off on Vercel (VERCEL=1). Keep this behind a static flag so the
+// virtual module is tree-shaken out of CI builds.
+if (import.meta.env.PROD && import.meta.env.VITE_ENABLE_PWA === "true") {
   void import("virtual:pwa-register").then(({ registerSW }) => {
     registerSW({ immediate: true });
   });
