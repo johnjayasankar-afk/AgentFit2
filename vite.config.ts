@@ -4,7 +4,7 @@ import path from "node:path";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
-const embedBase = process.env.EMBED_BASE
+const embedBase = process.env.EMBED_BASE;
 
 export default defineConfig({
   base: embedBase || "/",
@@ -15,6 +15,8 @@ export default defineConfig({
       disable: Boolean(embedBase),
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg"],
+      // Avoid workbox+terser early-exit failures on constrained CI (Vercel).
+      minify: false,
       manifest: {
         name: "AgentFit",
         short_name: "AgentFit",
@@ -36,6 +38,9 @@ export default defineConfig({
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,woff2}"],
         navigateFallback: `${embedBase || "/"}index.html`.replace("//index", "/index"),
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+        // Skip terser minify of the generated SW — the failure mode on Vercel CI.
+        mode: "development",
       },
     }),
   ],
