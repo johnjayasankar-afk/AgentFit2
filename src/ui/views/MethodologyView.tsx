@@ -32,17 +32,17 @@ export function MethodologyView() {
   }, [query]);
 
   return (
-    <div className="sheet" style={{ maxWidth: 860 }}>
+    <div className="sheet sheet-md">
       <p className="sys">Methodology · AgentFit Model 1.0</p>
-      <h1 className="fit-heading" style={{ marginTop: 8 }}>
+      <h1 className="fit-heading page-title">
         How the instrument decides
       </h1>
-      <p className="lede" style={{ marginTop: 16 }}>
+      <p className="lede page-lede">
         Autonomy is a product decision, not a model-size decision. AgentFit separates opportunity from
         independence, and independence from readiness.
       </p>
       <section className="section-block">
-        <h2 className="fit-heading" style={{ fontSize: "1.4rem" }}>
+        <h2 className="fit-heading subhead-lg">
           Four measures
         </h2>
         <dl className="brief-grid">
@@ -65,7 +65,7 @@ export function MethodologyView() {
         </dl>
       </section>
       <section className="section-block">
-        <h2 className="fit-heading" style={{ fontSize: "1.4rem" }}>
+        <h2 className="fit-heading subhead-lg">
           Agent Fit weights
         </h2>
         <ul>
@@ -76,17 +76,17 @@ export function MethodologyView() {
             </li>
           ))}
         </ul>
-        <p className="hint" style={{ marginTop: 12 }}>
+        <p className="hint mt-2">
           A conventional-automation penalty is applied when rules, structure, and low judgment make a script
           the better product. Historical assessments store modelVersion so later weight changes remain
           interpretable.
         </p>
       </section>
       <section className="section-block">
-        <h2 className="fit-heading" style={{ fontSize: "1.4rem" }}>
+        <h2 className="fit-heading subhead-lg">
           Portfolio class
         </h2>
-        <p className="lede" style={{ marginTop: 12 }}>
+        <p className="lede mt-2">
           Class is a roadmap lens, not a second Agent Fit score. The verdict is the one-line decision the rest of
           the instrument exists to support.
         </p>
@@ -109,17 +109,17 @@ export function MethodologyView() {
         </ul>
       </section>
       <section className="section-block">
-        <h2 className="fit-heading" style={{ fontSize: "1.4rem" }}>
+        <h2 className="fit-heading subhead-lg">
           What caps autonomy
         </h2>
-        <p className="lede" style={{ marginTop: 12 }}>
+        <p className="lede mt-2">
           The blockers list is not a second score. It names the constraints that keep independence below what a
           high Agent Fit might suggest: consequence, reversibility, access, verification, policy, and whether a
           script would be the better product.
         </p>
       </section>
       <section className="section-block">
-        <h2 className="fit-heading" style={{ fontSize: "1.4rem" }}>
+        <h2 className="fit-heading subhead-lg">
           Autonomy ladder
         </h2>
         <ol className="explain">
@@ -132,7 +132,7 @@ export function MethodologyView() {
         </ol>
       </section>
       <section className="section-block">
-        <h2 className="fit-heading" style={{ fontSize: "1.4rem" }}>
+        <h2 className="fit-heading subhead-lg">
           Dimensions
         </h2>
         <input
@@ -144,22 +144,18 @@ export function MethodologyView() {
         />
         {dims.length === 0 ? <p className="hint">No dimensions match.</p> : null}
         {dims.map((dim) => (
-          <div key={dim.key} className="section-block" style={{ marginTop: 16 }}>
+          <div key={dim.key} className="section-block method-dim">
             <p className="sys">{GROUP_LABELS[dim.group] ?? dim.group}</p>
-            <h3 style={{ fontWeight: 500, letterSpacing: "-0.03em", marginTop: 4 }}>{dim.name}</h3>
+            <h3 className="method-dim-title">{dim.name}</h3>
             <p className="hint">{polarityLabel(dim.polarity)}</p>
-            <p style={{ marginTop: 8 }}>{dim.definition}</p>
-            <p className="hint" style={{ marginTop: 6 }}>
-              {`1 · ${dim.low} → 5 · ${dim.high}`}
-            </p>
-            <p className="hint" style={{ marginTop: 8 }}>
-              {dim.why}
-            </p>
+            <p className="method-dim-body">{dim.definition}</p>
+            <p className="hint">{`1 · ${dim.low} → 5 · ${dim.high}`}</p>
+            <p className="hint">{dim.why}</p>
           </div>
         ))}
       </section>
       <section className="section-block">
-        <h2 className="fit-heading" style={{ fontSize: "1.4rem" }}>
+        <h2 className="fit-heading subhead-lg">
           Keyboard
         </h2>
         <ul className="explain">
@@ -175,9 +171,12 @@ export function MethodologyView() {
           <li>
             <b>1–8</b> — Recommend, Design, Scenario, Sensitivity, Pilot, Risks, Gates, Brief. Arrow keys move across tabs.
           </li>
+          <li>
+            <b>G</b> — jump to Gates while assessing (when not typing).
+          </li>
         </ul>
       </section>
-      <p className="sys" style={{ marginTop: 40 }}>
+      <p className="sys mt-4">
         AgentFit supports discovery and system design. It does not authorize production deployment.
       </p>
     </div>

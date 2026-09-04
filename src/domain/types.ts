@@ -271,6 +271,10 @@ export interface GoNoGoGate {
   status: GateStatus;
   detail: string;
   category: "fit" | "autonomy" | "readiness" | "controls" | "design" | "economics";
+  /** One-line control-loop hint shown on fail/warn. */
+  fixHint?: string;
+  /** Left-pane or result-tab target for the fix path. */
+  fixTarget?: "map" | "inventory" | "economics" | "diagnosis" | "design" | "risks" | "recommend";
 }
 
 export interface DesignSummary {

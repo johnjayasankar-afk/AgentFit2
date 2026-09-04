@@ -23,7 +23,7 @@ export function WelcomeView({
     <section className="welcome">
       <div className="welcome-inner">
         <p className="sys">AgentFit · Model 1.0</p>
-        <h1 className="display" style={{ marginTop: 16 }}>
+        <h1 className="display mt-3">
           When should a workflow get an agent?
         </h1>
         <p className="lede">
@@ -64,7 +64,7 @@ export function WelcomeView({
           </button>
         </div>
         {returning ? (
-          <p className="hint" style={{ marginTop: 16 }}>
+          <p className="hint mt-3">
             {`${savedCount} assessment${savedCount === 1 ? "" : "s"} on this device.`}
           </p>
         ) : null}
@@ -83,7 +83,7 @@ export function WelcomeView({
             </ul>
           </div>
         ) : null}
-        <p className="sys privacy">
+        <p className="privacy">
           Autonomy is a product decision, not a model-size decision. Your workflow assessments remain on this
           device unless you explicitly export them.
         </p>

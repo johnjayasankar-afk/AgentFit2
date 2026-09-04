@@ -28,17 +28,17 @@ export function WorkflowInventoryEditors({
 
   return (
     <>
-      <section className="section-block">
-        <p className="sys">02 · Workflow map</p>
-        <h3 className="fit-heading" style={{ fontSize: "1.35rem" }}>
+      <section className="section-block" id="assess-map">
+        <p className="sys">Map</p>
+        <h3 className="fit-heading subhead">
           Steps the work actually takes
         </h3>
-        <p className="hint" style={{ marginTop: 8 }}>
+        <p className="hint page-hint">
           This is the difference between a survey and a design. Name handoffs, who acts, which systems are
           touched, and how a step fails.
         </p>
         {steps.length === 0 ? (
-          <p className="hint" style={{ marginTop: 12 }}>
+          <p className="hint mt-2">
             No steps yet. Add the real sequence — ingest → decide → act → verify.
           </p>
         ) : null}
@@ -85,6 +85,34 @@ export function WorkflowInventoryEditors({
                   />
                   Reversible
                 </label>
+                <button
+                  type="button"
+                  className="why-btn"
+                  disabled={index === 0}
+                  aria-label={`Move step ${index + 1} up`}
+                  onClick={() => {
+                    if (index === 0) return;
+                    const next = [...steps];
+                    [next[index - 1], next[index]] = [next[index], next[index - 1]];
+                    setSteps(next);
+                  }}
+                >
+                  Up
+                </button>
+                <button
+                  type="button"
+                  className="why-btn"
+                  disabled={index === steps.length - 1}
+                  aria-label={`Move step ${index + 1} down`}
+                  onClick={() => {
+                    if (index >= steps.length - 1) return;
+                    const next = [...steps];
+                    [next[index], next[index + 1]] = [next[index + 1], next[index]];
+                    setSteps(next);
+                  }}
+                >
+                  Down
+                </button>
                 <button
                   type="button"
                   className="why-btn"
@@ -137,8 +165,7 @@ export function WorkflowInventoryEditors({
         </ol>
         <button
           type="button"
-          className="line-btn"
-          style={{ marginTop: 12 }}
+          className="line-btn mt-2"
           onClick={() =>
             setSteps([
               ...steps,
@@ -158,15 +185,20 @@ export function WorkflowInventoryEditors({
         </button>
       </section>
 
-      <section className="section-block">
-        <p className="sys">03 · Systems inventory</p>
-        <h3 className="fit-heading" style={{ fontSize: "1.35rem" }}>
+      <section className="section-block" id="assess-inventory">
+        <p className="sys">Inventory</p>
+        <h3 className="fit-heading subhead">
           What an agent would touch
         </h3>
-        <p className="hint" style={{ marginTop: 8 }}>
+        <p className="hint page-hint">
           Named systems with access level beat vague “tooling readiness.” Write and admin access drive FMEA and
           go/no-go gates.
         </p>
+        {systems.length === 0 ? (
+          <p className="hint mt-2">
+            No systems yet. Name the CRM, ledger, inbox, or tool an agent would actually touch.
+          </p>
+        ) : null}
         <ul className="design-list">
           {systems.map((system, index) => (
             <li key={system.id}>
@@ -236,8 +268,7 @@ export function WorkflowInventoryEditors({
         </ul>
         <button
           type="button"
-          className="line-btn"
-          style={{ marginTop: 12 }}
+          className="line-btn mt-2"
           onClick={() =>
             setSystems([
               ...systems,

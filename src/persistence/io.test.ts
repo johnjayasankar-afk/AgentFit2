@@ -60,6 +60,7 @@ describe("import / export", () => {
     const record = createRecord({ inputs: ARCHETYPE_DEFAULTS.reporting });
     const csv = toCsv([record]);
     expect(csv.startsWith("name,archetype,fit")).toBe(true);
+    expect(csv).toContain("steps,systems,map_pct,gate_fails,top_rpn");
     expect(csv).toContain("Reporting");
     expect(csv).toContain("Conventional Software");
   });

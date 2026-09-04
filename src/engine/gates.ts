@@ -16,6 +16,8 @@ export function buildGoNoGo(inputs: AssessmentInputs, result: EvaluationResult):
         : result.score >= 40
           ? `Fit ${result.score}/100 is marginal — treat as discovery only.`
           : `Fit ${result.score}/100 is too weak for an agent program.`,
+    fixHint: result.score < 60 ? "Raise economics, structure, or readiness — or choose Assist, Don’t Agentify." : undefined,
+    fixTarget: result.score < 60 ? "diagnosis" : undefined,
   });
 
   gates.push({
@@ -27,6 +29,8 @@ export function buildGoNoGo(inputs: AssessmentInputs, result: EvaluationResult):
       result.conventionalAffinity >= 0.55
         ? "Conventional affinity is high — prefer a rules engine or script."
         : "Agentic path is not dominated by conventional automation.",
+    fixHint: result.conventionalAffinity >= 0.4 ? "If the work is rule-clear and low-judgment, automate conventionally." : undefined,
+    fixTarget: result.conventionalAffinity >= 0.4 ? "recommend" : undefined,
   });
 
   gates.push({
@@ -38,6 +42,8 @@ export function buildGoNoGo(inputs: AssessmentInputs, result: EvaluationResult):
       result.blockers.length === 0
         ? `${result.autonomyLabel} has no hard ceiling from current inputs.`
         : `Capped by: ${result.blockers.map((b) => b.title).join("; ")}.`,
+    fixHint: result.blockers.length > 0 ? "Address the autonomy caps on Recommend, or keep autonomy lower." : undefined,
+    fixTarget: result.blockers.length > 0 ? "recommend" : undefined,
   });
 
   gates.push({
@@ -51,6 +57,8 @@ export function buildGoNoGo(inputs: AssessmentInputs, result: EvaluationResult):
           ? "warn"
           : "fail",
     detail: result.readinessNote,
+    fixHint: result.readiness === "Not Ready" || result.readiness === "Discovery Ready" ? "Improve observability, verification, and midpoints on Diagnosis." : undefined,
+    fixTarget: "diagnosis",
   });
 
   gates.push({
@@ -62,6 +70,8 @@ export function buildGoNoGo(inputs: AssessmentInputs, result: EvaluationResult):
       result.controlsRequired.length === 0
         ? "No controls listed — unusual; re-check risk and access."
         : `${result.controlsRequired.length} controls required before the recommended autonomy is credible.`,
+    fixHint: "Review Design · control posture and Risks.",
+    fixTarget: "design",
   });
 
   gates.push({
@@ -75,6 +85,8 @@ export function buildGoNoGo(inputs: AssessmentInputs, result: EvaluationResult):
         : design.stepCount >= 1
           ? "Partial map — add handoffs, writes, and failure modes."
           : "No steps yet. Map the real process before funding an agent.",
+    fixHint: design.stepCount < 3 ? "Add steps on the left · Map section." : undefined,
+    fixTarget: "map",
   });
 
   gates.push({
@@ -86,6 +98,8 @@ export function buildGoNoGo(inputs: AssessmentInputs, result: EvaluationResult):
       design.systemCount === 0
         ? "No systems listed. Inventory APIs, ledgers, and tools with access level."
         : `${design.systemCount} systems · ${design.writeSystemCount} with write/admin access.`,
+    fixHint: design.systemCount < 2 ? "Name systems and access levels on Inventory." : undefined,
+    fixTarget: "inventory",
   });
 
   gates.push({
@@ -106,6 +120,8 @@ export function buildGoNoGo(inputs: AssessmentInputs, result: EvaluationResult):
         : design.irreversibleSteps > 0 && result.autonomy >= 3
           ? "Irreversible steps + supervised-or-higher autonomy without proven gates is a no-go."
           : "Writes exist — keep approval boundaries in the pilot design.",
+    fixHint: "Mark irreversible steps, lower autonomy, or require human confirmation on writes.",
+    fixTarget: "map",
   });
 
   const hours = result.capacity.netCapacityReturned;
@@ -115,6 +131,8 @@ export function buildGoNoGo(inputs: AssessmentInputs, result: EvaluationResult):
     category: "economics",
     status: hours >= 8 ? "pass" : hours >= 2 ? "warn" : "fail",
     detail: `${hours} hrs/week potential capacity returned under stated assumptions.`,
+    fixHint: hours < 8 ? "Raise volume or minutes on Economics, or accept a smaller discovery." : undefined,
+    fixTarget: "economics",
   });
 
   gates.push({
@@ -133,6 +151,8 @@ export function buildGoNoGo(inputs: AssessmentInputs, result: EvaluationResult):
       result.fmea.length === 0
         ? "FMEA empty — map steps or raise risk visibility."
         : `Highest RPN ${result.fmea[0]?.rpn ?? 0} · ${result.fmea.filter((f) => f.rpn >= 40).length} items ≥ 40.`,
+    fixHint: "Open Risks · FMEA and write mitigations for high-RPN items.",
+    fixTarget: "risks",
   });
 
   gates.push({

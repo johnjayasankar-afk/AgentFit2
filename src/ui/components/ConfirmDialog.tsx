@@ -36,6 +36,22 @@ export function ConfirmDialog({
     queueMicrotask(() => target?.focus?.());
   };
 
+  const confirmButton = (
+    <button
+      ref={confirmRef}
+      type="button"
+      className={destructive ? "line-btn" : "ink-btn"}
+      onClick={confirm}
+    >
+      {confirmLabel}
+    </button>
+  );
+  const cancelButton = (
+    <button ref={cancelRef} type="button" className={destructive ? "ink-btn" : "line-btn"} onClick={cancel}>
+      Cancel
+    </button>
+  );
+
   return (
     <div
       className="modal"
@@ -61,20 +77,25 @@ export function ConfirmDialog({
           }
         }}
       >
-        <p className="sys">Confirm</p>
-        <h2 id="confirm-title" className="fit-heading" style={{ marginTop: 8 }}>
+        <p className="sys">{destructive ? "Destructive" : "Confirm"}</p>
+        <h2 id="confirm-title" className="fit-heading page-title">
           {title}
         </h2>
-        <p className="lede" style={{ marginTop: 12 }} id="confirm-body">
+        <p className="lede mt-2" id="confirm-body">
           {body}
         </p>
         <div className="toolbar">
-          <button ref={confirmRef} type="button" className="ink-btn" onClick={confirm}>
-            {confirmLabel}
-          </button>
-          <button ref={cancelRef} type="button" className="line-btn" onClick={cancel}>
-            Cancel
-          </button>
+          {destructive ? (
+            <>
+              {cancelButton}
+              {confirmButton}
+            </>
+          ) : (
+            <>
+              {confirmButton}
+              {cancelButton}
+            </>
+          )}
         </div>
       </div>
     </div>

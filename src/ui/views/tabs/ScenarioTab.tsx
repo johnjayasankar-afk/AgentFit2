@@ -104,7 +104,7 @@ export function ScenarioTab({
 
   return (
     <div>
-      <p className="hint" style={{ marginTop: 16, color: "inherit", opacity: 0.55 }}>
+      <p className="hint mt-3">
         What would need to change before this workflow deserves more autonomy?
       </p>
       <div className="toolbar">
@@ -137,12 +137,12 @@ export function ScenarioTab({
         <Delta label="Readiness" from={delta.readiness.from} to={delta.readiness.to} />
       </div>
       {delta.verdict.from !== delta.verdict.to ? (
-        <p className="verdict" style={{ marginTop: 16 }}>
+        <p className="verdict mt-3">
           {delta.verdict.to}
         </p>
       ) : null}
       {movers.length > 0 ? (
-        <div className="section-block" style={{ marginTop: 8 }}>
+        <div className="section-block lead">
           <h3 className="sys">What moved the recommendation</h3>
           <ul className="path-list">
             {movers.map((row) => (
@@ -181,7 +181,7 @@ export function ScenarioTab({
       <div className="section-block">
         <h3 className="sys">Path to next autonomy level</h3>
         {currentResult.pathToNextAutonomy.length === 0 ? (
-          <p className="hint" style={{ marginTop: 10, color: "inherit", opacity: 0.55 }}>
+          <p className="hint mt-2">
             No further autonomy increase is recommended from these inputs.
           </p>
         ) : (

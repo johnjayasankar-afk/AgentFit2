@@ -15,11 +15,11 @@ export function RisksTab({
 }) {
   return (
     <div>
-      <p className="hint" style={{ marginTop: 16, color: "inherit", opacity: 0.55 }}>
+      <p className="hint mt-3">
         Risk register from scored inputs. FMEA from workflow steps, write systems, and risks — edit mitigations.
       </p>
       {risks.length === 0 ? (
-        <p className="hint" style={{ marginTop: 12, color: "inherit", opacity: 0.55 }}>
+        <p className="hint mt-2">
           No material scored risks. Confirm inputs are not overly optimistic.
         </p>
       ) : (
@@ -28,11 +28,11 @@ export function RisksTab({
             <li key={item.id}>
               <div>
                 <b>{item.risk}</b>
-                <div className="hint" style={{ color: "inherit", opacity: 0.5, marginTop: 4 }}>
+                <div className="hint-faint mt-1">
                   {item.why}
                 </div>
               </div>
-              <label className="field" style={{ marginTop: 0 }}>
+              <label className="field tight">
                 <span className="sys">Mitigation</span>
                 <input
                   type="text"
@@ -59,11 +59,11 @@ export function RisksTab({
 
       <div className="section-block">
         <h3 className="sys">FMEA</h3>
-        <p className="hint" style={{ marginTop: 8, color: "inherit", opacity: 0.5 }}>
+        <p className="hint-faint mt-1">
           RPN = severity × occurrence × detection. Highest first.
         </p>
         {fmea.length === 0 ? (
-          <p className="hint" style={{ marginTop: 10, color: "inherit", opacity: 0.55 }}>
+          <p className="hint mt-2">
             Map workflow steps and write systems to generate failure modes.
           </p>
         ) : (
@@ -72,13 +72,13 @@ export function RisksTab({
               <li key={item.id}>
                 <div>
                   <b>{item.failure}</b>
-                  <span className="hint" style={{ display: "block", marginTop: 4, color: "inherit", opacity: 0.5 }}>
+                  <span className="hint-faint mt-1 block">
                     {`${item.cause} · ${item.effect}`}
                   </span>
                 </div>
                 <span className="sys">{`RPN ${item.rpn}`}</span>
                 <span className="sys">{item.source}</span>
-                <label className="field" style={{ marginTop: 0, gridColumn: "1 / -1" }}>
+                <label className="field tight span">
                   <span className="sys">Mitigation</span>
                   <input
                     type="text"

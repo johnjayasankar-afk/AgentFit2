@@ -68,10 +68,10 @@ export function RecommendationTab({
       ) : null}
       <div className="section-block">
         <h3 className="sys">Readiness</h3>
-        <p className="therefore" style={{ marginTop: 8 }}>
+        <p className="therefore mt-1">
           {result.readinessNote}
         </p>
-        <p className="hint" style={{ marginTop: 10, color: "inherit", opacity: 0.5 }}>
+        <p className="hint-faint mt-2">
           AgentFit supports discovery and system design. It does not authorize production deployment.
         </p>
       </div>
@@ -99,10 +99,10 @@ export function RecommendationTab({
             </div>
           ) : null}
         </div>
-        <p className="hint" style={{ marginTop: 12, color: "inherit", opacity: 0.5 }}>
+        <p className="hint-faint mt-2">
           Coverage and review time are assumptions. Capacity returned is not automatically savings.
         </p>
-        <div className="econ-grid" style={{ marginTop: 12 }}>
+        <div className="econ-grid mt-2">
           <HypothesisSlider
             label="Expected coverage"
             value={assumptions.coverage}
@@ -131,10 +131,10 @@ export function RecommendationTab({
       </div>
       <div className="section-block">
         <h3 className="sys">Next experiment</h3>
-        <p className="therefore" style={{ marginTop: 8 }}>
+        <p className="therefore mt-1">
           {result.experiment.title}
         </p>
-        <p className="hint" style={{ marginTop: 8, color: "inherit", opacity: 0.55 }}>
+        <p className="hint page-hint">
           {result.experiment.rationale}
         </p>
       </div>
@@ -147,7 +147,7 @@ export function RecommendationTab({
           <h3 className="sys">Confidence notes</h3>
           <ul>
             {result.confidenceReasons.map((note) => (
-              <li key={note} className="rule-item" style={{ fontSize: 13 }}>
+              <li key={note} className="rule-item prose-sm">
                 {note}
               </li>
             ))}

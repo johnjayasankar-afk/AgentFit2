@@ -37,6 +37,7 @@ import { ResultsPanel } from "@/ui/views/ResultsPanel";
 import { SettingsView } from "@/ui/views/SettingsView";
 import { WelcomeView } from "@/ui/views/WelcomeView";
 import { modKey } from "@/util/mod";
+import { scrollToId } from "@/util/scroll";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -407,6 +408,11 @@ export default function App() {
         return;
       }
       if (!chord && view === "assess" && !commandOpen) {
+        if (event.key.toLowerCase() === "g") {
+          event.preventDefault();
+          setResultTab("gates");
+          return;
+        }
         const index = Number(event.key) - 1;
         if (index >= 0 && index < RESULT_TABS.length) {
           event.preventDefault();
@@ -480,6 +486,7 @@ export default function App() {
       <a className="skip" href="#main">
         Skip to content
       </a>
+      <div className="app-shell" {...(commandOpen || confirm ? { inert: true } : {})}>
       <header className="header">
         {import.meta.env.BASE_URL !== "/" ? (
           <a className="host-back" href="/">
@@ -615,7 +622,7 @@ export default function App() {
                     };
                     setConfirm({
                       title: "Replace diagnosis with archetype defaults?",
-                      body: "This overwrites structure, systems, risk, and human-loop scores with the archetype starting point. Scenario Lab probe and edited criteria/risks are cleared. Your workflow name and notes are kept.",
+                      body: "This replaces scores, workflow map, and systems inventory with the archetype starting point. Scenario Lab and edited criteria / risks / FMEA are cleared. Your workflow name and notes are kept.",
                       confirmLabel: "Apply archetype",
                       onConfirm: () => {
                         setConfirm(null);
@@ -709,6 +716,19 @@ export default function App() {
                   onFmea={(editedFmea) => {
                     setDraft((current) => ({ ...current, editedFmea }));
                     markDirty();
+                  }}
+                  onFocusAssess={(anchor) => {
+                    const id =
+                      anchor === "define"
+                        ? "assess-define"
+                        : anchor === "map"
+                          ? "assess-map"
+                          : anchor === "inventory"
+                            ? "assess-inventory"
+                            : anchor === "economics"
+                              ? "assess-economics"
+                              : "assess-diagnosis";
+                    scrollToId(id);
                   }}
                 />
               </section>
@@ -818,9 +838,20 @@ export default function App() {
         ) : null}
       </main>
       <footer className="status-bar" aria-label="Workspace status">
-        <span>Local-first · no accounts · no telemetry</span>
-        <span>{`Shell ${SHELL_VERSION} · ${MODEL_LABEL}`}</span>
+        <span>
+          {dirty
+            ? "Unsaved"
+            : draft.updatedAt
+              ? "Saved"
+              : "Local draft"}
+          {result.completeness < 0.7
+            ? ` · sketch ${Math.round(result.completeness * 100)}%`
+            : " · complete"}
+          {` · gates ${result.goNoGo.filter((g) => g.status === "fail").length}F/${result.goNoGo.filter((g) => g.status === "warn").length}W`}
+        </span>
+        <span>{`Shell ${SHELL_VERSION} · ${MODEL_LABEL} · no telemetry`}</span>
       </footer>
+      </div>
       <CommandPalette open={commandOpen} items={commands} onClose={() => setCommandOpen(false)} />
       {toast ? (
         <div className="toast" role="status">

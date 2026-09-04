@@ -30,9 +30,10 @@ export function AssessForm({
 
   return (
     <div>
-      <p className="sys">01 · Define</p>
+    <div id="assess-define">
+      <p className="sys">Define</p>
       <h2 className="fit-heading">Define the work</h2>
-      <p className="hint" style={{ marginTop: 8 }}>
+      <p className="hint page-hint">
         Archetypes are starting points. Map the workflow and systems — then score the diagnosis.
       </p>
       <div className="field">
@@ -54,7 +55,7 @@ export function AssessForm({
           onChange={(event) => onChange({ ...inputs, description: event.target.value })}
         />
       </div>
-      <p className="sys" style={{ marginTop: 22 }}>
+      <p className="sys mt-3">
         Workflow archetype
       </p>
       <div className="presets" role="group" aria-label="Workflow archetype">
@@ -70,12 +71,13 @@ export function AssessForm({
           </button>
         ))}
       </div>
+      </div>
 
       <WorkflowInventoryEditors inputs={inputs} onChange={onChange} />
 
-      <section className="section-block">
-        <p className="sys">04 · Economics</p>
-        <h3 className="fit-heading" style={{ fontSize: "1.35rem" }}>
+      <section className="section-block" id="assess-economics">
+        <p className="sys">Economics</p>
+        <h3 className="fit-heading subhead">
           Volume and time
         </h3>
         <div className="econ-grid">
@@ -93,7 +95,7 @@ export function AssessForm({
           </div>
           <div className="field">
             <label>Period</label>
-            <div className="seg" role="group" aria-label="Volume period" style={{ marginTop: 10 }}>
+            <div className="seg mt-2" role="group" aria-label="Volume period">
               {PERIODS.map((period) => (
                 <button
                   key={period}
@@ -149,7 +151,7 @@ export function AssessForm({
             />
           </div>
         </div>
-        <p className="hint" style={{ marginTop: 10 }}>
+        <p className="hint mt-2">
           Cost is optional. Without it, AgentFit reports potential capacity returned — not savings.
         </p>
         <p className="econ-live sys" aria-live="polite">
@@ -160,9 +162,9 @@ export function AssessForm({
         </p>
         <DimensionGroup group="economics" keys={["variability"]} inputs={inputs} onChange={onChange} />
       </section>
-      <section className="section-block">
-        <p className="sys">05 · Diagnose</p>
-        <h3 className="fit-heading" style={{ fontSize: "1.35rem" }}>
+      <section className="section-block" id="assess-diagnosis">
+        <p className="sys">Diagnosis</p>
+        <h3 className="fit-heading subhead">
           Workflow structure
         </h3>
         <DimensionGroup
@@ -173,7 +175,7 @@ export function AssessForm({
         />
       </section>
       <section className="section-block">
-        <h3 className="fit-heading" style={{ fontSize: "1.35rem" }}>
+        <h3 className="fit-heading subhead">
           System readiness
         </h3>
         <DimensionGroup
@@ -184,7 +186,7 @@ export function AssessForm({
         />
       </section>
       <section className="section-block">
-        <h3 className="fit-heading" style={{ fontSize: "1.35rem" }}>
+        <h3 className="fit-heading subhead">
           Action and risk
         </h3>
         <DimensionGroup
@@ -195,7 +197,7 @@ export function AssessForm({
         />
       </section>
       <section className="section-block">
-        <h3 className="fit-heading" style={{ fontSize: "1.35rem" }}>
+        <h3 className="fit-heading subhead">
           Human in the loop
         </h3>
         <DimensionGroup

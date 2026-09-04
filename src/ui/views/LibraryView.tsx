@@ -67,10 +67,10 @@ export function LibraryView({
     return (
       <div className="sheet">
         <p className="sys">Assessments</p>
-        <h1 className="fit-heading" style={{ marginTop: 8 }}>
+        <h1 className="fit-heading page-title">
           Library
         </h1>
-        <p className="hint" style={{ marginTop: 8 }}>
+        <p className="hint page-hint">
           Opening this device…
         </p>
       </div>
@@ -80,10 +80,10 @@ export function LibraryView({
   return (
     <div className="sheet">
       <p className="sys">Assessments</p>
-      <h1 className="fit-heading" style={{ marginTop: 8 }}>
+      <h1 className="fit-heading page-title">
         Library
       </h1>
-      <p className="hint" style={{ marginTop: 8 }}>
+      <p className="hint page-hint">
         Stored on this device. Select 2–4 rows to compare.
         {selected.length >= 4 ? " Compare is full (4)." : ""}
       </p>
@@ -98,27 +98,21 @@ export function LibraryView({
         />
       </div>
       <div className="toolbar">
-        <button
-          type="button"
-          className={klass === "all" ? "ink-btn" : "line-btn"}
-          aria-pressed={klass === "all"}
-          onClick={() => setKlass("all")}
-        >
-          All
-        </button>
-        {PORTFOLIO_CLASSES.map((item) => (
-          <button
-            key={item}
-            type="button"
-            className={klass === item ? "ink-btn" : "line-btn"}
-            aria-pressed={klass === item}
-            onClick={() => setKlass(item)}
+        <label className="field tight" style={{ flex: "1 1 200px", marginTop: 0 }}>
+          <span className="sys">Class</span>
+          <select
+            aria-label="Filter by portfolio class"
+            value={klass}
+            onChange={(event) => setKlass(event.target.value as PortfolioClass | "all")}
           >
-            {item}
-          </button>
-        ))}
-      </div>
-      <div className="toolbar">
+            <option value="all">All classes</option>
+            {PORTFOLIO_CLASSES.map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
+          </select>
+        </label>
         {(Object.keys(SORT_LABELS) as SortKey[]).map((key) => (
           <button
             key={key}
@@ -140,7 +134,7 @@ export function LibraryView({
       {rows.length === 0 ? (
         <div className="empty">
           <p className="fit-heading">{live.length === 0 ? "No assessments yet." : "Nothing matches."}</p>
-          <p className="hint" style={{ marginTop: 8 }}>
+          <p className="hint page-hint">
             {live.length === 0
               ? "Start an assessment or explore an example. Saved work will appear here."
               : "Clear the class filter or search."}
@@ -187,19 +181,17 @@ export function LibraryView({
                     onChange={() => onToggleSelect(record.id)}
                     aria-label={`Select ${record.inputs.name || "untitled"} for compare`}
                   />
-                  <button type="button" className="link" onClick={() => onOpen(record.id)}>
-                    {record.inputs.name.trim() || "Untitled workflow"}
-                    {record.demo ? <span className="hint"> · example</span> : null}
-                    {record.archived ? <span className="hint"> · archived</span> : null}
-                    {record.id === currentId ? <span className="hint"> · open</span> : null}
-                  </button>
+                  <div className="library-name-body">
+                    <button type="button" className="link" onClick={() => onOpen(record.id)}>
+                      {record.inputs.name.trim() || "Untitled workflow"}
+                      {record.demo ? <span className="hint"> · example</span> : null}
+                      {record.archived ? <span className="hint"> · archived</span> : null}
+                      {record.id === currentId ? <span className="hint"> · open</span> : null}
+                    </button>
+                    <span className="sys">{record.result.portfolioClass}</span>
+                    <span className="verdict-line hint">{record.result.verdict}</span>
+                  </div>
                 </div>
-                <span className="sys" style={{ display: "block", marginTop: 4, marginLeft: 22 }}>
-                  {record.result.portfolioClass}
-                </span>
-                <span className="verdict-line hint" style={{ marginTop: 4, marginLeft: 22 }}>
-                  {record.result.verdict}
-                </span>
               </div>
               <span data-label="Fit">{record.result.score}</span>
               <span data-label="Autonomy">{record.result.autonomyLabel}</span>
@@ -209,7 +201,7 @@ export function LibraryView({
                 <span className="hint" title={new Date(record.updatedAt).toLocaleString()}>
                   {relativeTime(record.updatedAt)}
                 </span>
-                <div className="toolbar" style={{ margin: "6px 0 0" }}>
+                <div className="toolbar mt-1">
                   <button type="button" className="why-btn" onClick={() => onDuplicate(record.id)}>
                     Duplicate
                   </button>

@@ -17,11 +17,11 @@ export function SensitivityTab({
 
   return (
     <div>
-      <p className="hint" style={{ marginTop: 16, color: "inherit", opacity: 0.55 }}>
+      <p className="hint mt-3">
         Each dimension is moved one step in the direction that usually improves readiness, then the model is
         recomputed. Test in Scenario Lab does not change the current assessment until you adopt.
       </p>
-      <h3 className="sys" style={{ marginTop: 20 }}>
+      <h3 className="sys mt-3">
         Highest leverage
       </h3>
       <ul className="sense-list">

@@ -66,13 +66,13 @@ export function BriefTab({
       ) : null}
       <article className="brief" style={{ marginTop: chrome ? 8 : 0 }}>
         <p className="sys">{result.modelLabel}</p>
-        <h2 className="fit-heading" style={{ marginTop: 8 }}>
+        <h2 className="fit-heading page-title">
           {inputs.name.trim() || "Untitled workflow"}
         </h2>
-        <p className="hint" style={{ marginTop: 8, color: "inherit", opacity: 0.55 }}>
+        <p className="hint page-hint">
           {inputs.description || "No description."}
         </p>
-        <p className="verdict" style={{ marginTop: 16 }}>
+        <p className="verdict mt-3">
           {result.verdict}
         </p>
         <dl className="brief-grid">
@@ -91,18 +91,18 @@ export function BriefTab({
         {notes.trim() ? (
           <div className="section-block">
             <h3 className="sys">Notes</h3>
-            <p style={{ marginTop: 8 }}>{notes}</p>
+            <p className="prose-sm mt-1">{notes}</p>
           </div>
         ) : null}
         <div className="section-block">
           <h3 className="sys">Why this matters</h3>
-          <p style={{ marginTop: 8 }}>{result.explanation.therefore}</p>
+          <p className="prose-sm mt-1">{result.explanation.therefore}</p>
         </div>
         <div className="section-block">
           <h3 className="sys">What caps autonomy</h3>
-          <ul>
+          <ul className="mt-1">
             {result.blockers.length === 0 ? (
-              <li style={{ padding: "6px 0" }}>No hard autonomy ceiling from these inputs.</li>
+              <li className="rule-item">No hard autonomy ceiling from these inputs.</li>
             ) : (
               result.blockers.map((item) => (
                 <li key={item.id} className="rule-item">
@@ -115,9 +115,9 @@ export function BriefTab({
         </div>
         <div className="section-block">
           <h3 className="sys">Failed gates</h3>
-          <ul>
+          <ul className="mt-1">
             {fails.length === 0 ? (
-              <li style={{ padding: "6px 0" }}>None — still not a production authorization.</li>
+              <li className="rule-item">None — still not a production authorization.</li>
             ) : (
               fails.map((gate) => (
                 <li key={gate.id} className="rule-item">
@@ -130,9 +130,9 @@ export function BriefTab({
         </div>
         <div className="section-block">
           <h3 className="sys">What to test next</h3>
-          <p style={{ marginTop: 8 }}>{result.experiment.title}</p>
+          <p className="prose-sm mt-1">{result.experiment.title}</p>
           {criteria.length > 0 ? (
-            <ul style={{ marginTop: 10 }}>
+            <ul className="mt-2">
               {criteria.map((item) => (
                 <li key={item} className="rule-item">
                   {item}
@@ -144,7 +144,7 @@ export function BriefTab({
         {risks.length > 0 ? (
           <div className="section-block">
             <h3 className="sys">Risks and mitigations</h3>
-            <ul style={{ marginTop: 8 }}>
+            <ul className="mt-1">
               {risks.map((item) => (
                 <li key={item.id} className="rule-item">
                   <b>{item.risk}</b>
@@ -157,7 +157,7 @@ export function BriefTab({
         {fmea.length > 0 ? (
           <div className="section-block">
             <h3 className="sys">FMEA (top)</h3>
-            <ul style={{ marginTop: 8 }}>
+            <ul className="mt-1">
               {fmea.slice(0, 6).map((item) => (
                 <li key={item.id} className="rule-item">
                   <b>{`RPN ${item.rpn}`}</b>
@@ -167,7 +167,7 @@ export function BriefTab({
             </ul>
           </div>
         ) : null}
-        <p className="hint" style={{ marginTop: 24 }}>
+        <p className="hint mt-3">
           AgentFit supports discovery and system design. It does not authorize production deployment.
         </p>
       </article>

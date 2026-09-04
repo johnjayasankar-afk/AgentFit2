@@ -49,20 +49,20 @@ export function SettingsView({
   };
 
   return (
-    <div className="sheet" style={{ maxWidth: 720 }}>
+    <div className="sheet sheet-sm">
       <p className="sys">Workspace</p>
-      <h1 className="fit-heading" style={{ marginTop: 8 }}>
+      <h1 className="fit-heading page-title">
         Data and privacy
       </h1>
-      <p className="lede" style={{ marginTop: 16 }}>
+      <p className="lede page-lede">
         Your workflow assessments remain on this device unless you explicitly export them. There is no account
         and no telemetry.
       </p>
-      <div className="section-block" style={{ marginTop: 8, borderTop: 0, paddingTop: 0 }}>
-        <h2 className="fit-heading" style={{ fontSize: "1.2rem" }}>
+      <div className="section-block lead">
+        <h2 className="fit-heading subhead-sm">
           Appearance
         </h2>
-        <p className="hint" style={{ marginTop: 8 }}>
+        <p className="hint page-hint">
           Split keeps porcelain inputs and carbon results. Carbon and porcelain are full-surface themes.
         </p>
         <div className="toolbar">
@@ -114,21 +114,21 @@ export function SettingsView({
           event.target.value = "";
         }}
       />
-      {ok ? <p className="hint" style={{ marginTop: 16 }}>{ok}</p> : null}
+      {ok ? <p className="hint mt-3">{ok}</p> : null}
       {error ? (
-        <p className="hint" role="alert" style={{ marginTop: 16 }}>
+        <p className="hint mt-3" role="alert">
           {error}
         </p>
       ) : null}
-      <p className="hint" style={{ marginTop: 24 }}>
+      <p className="hint mt-3">
         Import never silently overwrites. Existing IDs are copied. Unsaved work is kept as tab scratch until the
         tab closes.
       </p>
       <div className="section-block">
-        <h2 className="fit-heading" style={{ fontSize: "1.2rem" }}>
+        <h2 className="fit-heading subhead-sm">
           Clear this device
         </h2>
-        <p className="hint" style={{ marginTop: 8 }}>
+        <p className="hint page-hint">
           Removes every assessment from IndexedDB on this browser. Export first if you may need the work.
         </p>
         <div className="toolbar">

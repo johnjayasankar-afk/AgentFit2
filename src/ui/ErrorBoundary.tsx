@@ -17,16 +17,16 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
   render() {
     if (this.state.message) {
       return (
-        <div className="sheet" style={{ maxWidth: 560 }}>
+        <div className="sheet sheet-sm">
           <p className="sys">AgentFit</p>
-          <h1 className="fit-heading" style={{ marginTop: 8 }}>
+          <h1 className="fit-heading page-title">
             The instrument failed to render
           </h1>
-          <p className="lede" style={{ marginTop: 16 }}>
+          <p className="lede page-lede">
             Assessments on this device were not modified. Reload, or export a backup from another session if you
             have one.
           </p>
-          <p className="hint" style={{ marginTop: 16 }}>
+          <p className="hint mt-3">
             {this.state.message}
           </p>
           <div className="toolbar">

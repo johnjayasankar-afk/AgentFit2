@@ -17,18 +17,18 @@ export function PilotTab({
 
   return (
     <div>
-      <div className="section-block" style={{ marginTop: 8, borderTop: 0, paddingTop: 8 }}>
+      <div className="section-block lead">
         <h3 className="sys">Recommended next experiment</h3>
-        <p className="therefore" style={{ marginTop: 8 }}>
+        <p className="therefore mt-1">
           {result.experiment.title}
         </p>
-        <p className="hint" style={{ marginTop: 8, color: "inherit", opacity: 0.55 }}>
+        <p className="hint page-hint">
           {result.experiment.rationale}
         </p>
       </div>
       <div className="section-block">
         <h3 className="sys">Success criteria</h3>
-        <p className="hint" style={{ marginTop: 8, color: "inherit", opacity: 0.5 }}>
+        <p className="hint-faint mt-1">
           Generated from the assessment. Edit freely.
         </p>
         {successCriteria.map((item, i) => (
@@ -58,7 +58,7 @@ export function PilotTab({
             </div>
           </div>
         ))}
-        <div className="toolbar" style={{ marginTop: 8 }}>
+        <div className="toolbar mt-1">
           <button type="button" className="why-btn" onClick={() => onSuccessCriteria([...successCriteria, ""])}>
             Add criterion
           </button>
@@ -89,7 +89,7 @@ function PilotLine({ label, value }: { label: string; value: string }) {
   return (
     <div className="section-block">
       <h3 className="sys">{label}</h3>
-      <p style={{ marginTop: 8, fontSize: 14 }}>{value}</p>
+      <p className="prose-sm mt-1">{value}</p>
     </div>
   );
 }

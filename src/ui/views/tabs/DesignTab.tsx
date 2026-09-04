@@ -1,17 +1,25 @@
 import type { EvaluationResult } from "@/domain/types";
 import { Architecture } from "@/ui/components/Architecture";
 
-export function DesignTab({ result }: { result: EvaluationResult }) {
+export function DesignTab({
+  result,
+  onFocusMap,
+  onOpenGates,
+}: {
+  result: EvaluationResult;
+  onFocusMap: () => void;
+  onOpenGates: () => void;
+}) {
   const { design } = result;
   return (
     <div>
-      <div className="section-block" style={{ marginTop: 8, borderTop: 0, paddingTop: 8 }}>
+      <div className="section-block lead">
         <h3 className="sys">Design summary</h3>
-        <p className="hint" style={{ marginTop: 8, color: "inherit", opacity: 0.55 }}>
+        <p className="hint page-hint">
           Workflow map and systems inventory turn scales into an implementable agent design. Mapping quality is
           separate from Agent Fit score.
         </p>
-        <div className="kpis" style={{ marginTop: 12 }}>
+        <div className="kpis mt-2">
           <div>
             <span>Steps mapped</span>
             <strong>{design.stepCount}</strong>
@@ -40,15 +48,13 @@ export function DesignTab({ result }: { result: EvaluationResult }) {
       </div>
       <div className="section-block">
         <h3 className="sys">Recommended system pattern</h3>
-        <p className="therefore" style={{ marginTop: 8 }}>
-          {result.pattern}
-        </p>
+        <p className="therefore mt-1">{result.pattern}</p>
         <Architecture nodes={result.architecture} />
       </div>
       <div className="section-block">
         <h3 className="sys">Control posture</h3>
-        <p style={{ marginTop: 8, fontSize: 14 }}>{result.controlPosture}</p>
-        <ul className="control-list" style={{ marginTop: 12 }}>
+        <p className="prose-sm mt-1">{result.controlPosture}</p>
+        <ul className="control-list mt-2">
           {result.controlsRequired.map((control) => (
             <li key={control.id}>
               <b>{control.label}</b>
@@ -58,9 +64,19 @@ export function DesignTab({ result }: { result: EvaluationResult }) {
         </ul>
       </div>
       {design.stepCount === 0 ? (
-        <p className="hint" style={{ marginTop: 16, color: "inherit", opacity: 0.55 }}>
-          Add workflow steps on the left to unlock FMEA depth and go/no-go design gates.
-        </p>
+        <div className="section-block">
+          <p className="hint">
+            Add workflow steps on the left to unlock FMEA depth and go/no-go design gates.
+          </p>
+          <div className="toolbar mt-2">
+            <button type="button" className="ink-btn" onClick={onFocusMap}>
+              Jump to map
+            </button>
+            <button type="button" className="line-btn" onClick={onOpenGates}>
+              View gates
+            </button>
+          </div>
+        </div>
       ) : null}
     </div>
   );

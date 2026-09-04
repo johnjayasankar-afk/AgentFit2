@@ -70,7 +70,7 @@ src/
   ui/            instrument interface
 ```
 
-The decision engine is deterministic, explainable, and independent of the UI. Calculations are pure functions. Scoring model version `1.0` is stored on every assessment so later methodology changes remain interpretable. The product shell is v4.0.
+The decision engine is deterministic, explainable, and independent of the UI. Calculations are pure functions. Scoring model version `1.0` is stored on every assessment so later methodology changes remain interpretable. The product shell is v4.1.
 
 ## Scoring methodology (Model 1.0)
 

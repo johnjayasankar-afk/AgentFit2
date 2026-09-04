@@ -15,10 +15,10 @@ export function CompareView({
     return (
       <div className="sheet">
         <p className="sys">Compare</p>
-        <h1 className="fit-heading" style={{ marginTop: 8 }}>
+        <h1 className="fit-heading page-title">
           Select 2–4 workflows
         </h1>
-        <p className="hint" style={{ marginTop: 10 }}>
+        <p className="hint mt-2">
           Comparison is for portfolio prioritization. Open the library and select at least two saved assessments.
         </p>
         <div className="toolbar">
@@ -35,15 +35,15 @@ export function CompareView({
   return (
     <div className="sheet">
       <p className="sys">Compare</p>
-      <h1 className="fit-heading" style={{ marginTop: 8 }}>
+      <h1 className="fit-heading page-title">
         Portfolio
       </h1>
-      <p className="hint" style={{ marginTop: 8 }}>
+      <p className="hint page-hint">
         Agent Fit is not the same as autonomy. High value with weak controls is a de-risk problem. Highlighted
         cells mark the strongest numeric signal in the row.
       </p>
       <PortfolioStrip results={records.map((record) => record.result)} />
-      <div className="compare-grid" style={{ marginTop: 24 }}>
+      <div className="compare-grid mt-3">
         <table>
           <thead>
             <tr>
@@ -87,6 +87,35 @@ export function CompareView({
             />
             <CompareRow label="Readiness" cells={records.map((record) => record.result.readiness)} />
             <CompareRow label="Classification" cells={records.map((record) => record.result.portfolioClass)} />
+            <CompareRow
+              label="Map steps"
+              cells={records.map((record) => String(record.result.design.stepCount))}
+              highlight="max"
+            />
+            <CompareRow
+              label="Systems"
+              cells={records.map((record) => String(record.result.design.systemCount))}
+              highlight="max"
+            />
+            <CompareRow
+              label="Map %"
+              cells={records.map((record) => `${Math.round(record.result.design.mappedCompleteness * 100)}%`)}
+              highlight="max"
+            />
+            <CompareRow
+              label="Gate fails"
+              cells={records.map(
+                (record) => String(record.result.goNoGo.filter((gate) => gate.status === "fail").length),
+              )}
+              highlight="min"
+            />
+            <CompareRow
+              label="Top RPN"
+              cells={records.map((record) =>
+                record.result.fmea[0] ? String(record.result.fmea[0].rpn) : "—",
+              )}
+              highlight="min"
+            />
             <CompareRow label="Verdict" cells={records.map((record) => record.result.verdict)} />
             <CompareRow
               label="What caps autonomy"

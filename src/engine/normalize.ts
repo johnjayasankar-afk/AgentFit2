@@ -27,20 +27,21 @@ export function isNamed(inputs: AssessmentInputs): boolean {
 }
 
 export function completeness(inputs: AssessmentInputs): number {
-  let filled = 0;
-  let total = 0;
+  const gaps = completenessGaps(inputs);
+  const total = gaps.length;
+  const filled = gaps.filter((gap) => gap.ok).length;
+  return total === 0 ? 0 : filled / total;
+}
 
-  const mark = (ok: boolean) => {
-    total += 1;
-    if (ok) filled += 1;
-  };
+export type CompletenessGap = {
+  id: string;
+  label: string;
+  ok: boolean;
+  anchor: "define" | "economics" | "map" | "inventory" | "diagnosis";
+};
 
-  mark(inputs.name.trim().length > 1);
-  mark(inputs.economics.volume > 0);
-  mark(inputs.economics.minutesPerCase > 0);
-  mark(Boolean(inputs.description.trim()) || inputs.archetype !== "custom");
-  mark(inputs.economics.loadedHourlyCost == null || inputs.economics.loadedHourlyCost > 0);
-
+/** Actionable checklist behind the sketch / completeness meter. */
+export function completenessGaps(inputs: AssessmentInputs): CompletenessGap[] {
   const scales = [
     ...Object.values(inputs.structure),
     ...Object.values(inputs.systems),
@@ -48,20 +49,58 @@ export function completeness(inputs: AssessmentInputs): number {
     ...Object.values(inputs.humanLoop),
     inputs.economics.variability,
   ];
-  for (const v of scales) {
-    mark(v >= 1 && v <= 5);
+  const midpoint = scales.filter((v) => v === 3).length;
+
+  const gaps: CompletenessGap[] = [
+    { id: "name", label: "Named workflow", ok: inputs.name.trim().length > 1, anchor: "define" },
+    { id: "volume", label: "Volume > 0", ok: inputs.economics.volume > 0, anchor: "economics" },
+    { id: "minutes", label: "Minutes per case > 0", ok: inputs.economics.minutesPerCase > 0, anchor: "economics" },
+    {
+      id: "description",
+      label: "Description or non-custom archetype",
+      ok: Boolean(inputs.description.trim()) || inputs.archetype !== "custom",
+      anchor: "define",
+    },
+    {
+      id: "cost",
+      label: "Hourly cost unset or > 0",
+      ok: inputs.economics.loadedHourlyCost == null || inputs.economics.loadedHourlyCost > 0,
+      anchor: "economics",
+    },
+  ];
+
+  for (const [i, v] of scales.entries()) {
+    gaps.push({
+      id: `scale-${i}`,
+      label: "Diagnosis scale 1–5",
+      ok: v >= 1 && v <= 5,
+      anchor: "diagnosis",
+    });
   }
 
   if (inputs.archetype === "custom") {
-    const midpoint = scales.filter((v) => v === 3).length;
-    mark(midpoint < scales.length * 0.7);
+    gaps.push({
+      id: "midpoints",
+      label: "Fewer than 70% midpoint (3) scores",
+      ok: midpoint < scales.length * 0.7,
+      anchor: "diagnosis",
+    });
   }
 
-  mark(inputs.workflow.steps.length >= 2);
-  mark(inputs.inventory.systems.length >= 1);
-  mark(inputs.workflow.steps.some((step) => step.failureMode.trim().length > 0) || inputs.workflow.steps.length === 0);
+  gaps.push(
+    { id: "steps", label: "At least 2 workflow steps", ok: inputs.workflow.steps.length >= 2, anchor: "map" },
+    { id: "systems", label: "At least 1 named system", ok: inputs.inventory.systems.length >= 1, anchor: "inventory" },
+    {
+      id: "failures",
+      label: "At least one failure mode (or no steps yet)",
+      ok:
+        inputs.workflow.steps.some((step) => step.failureMode.trim().length > 0) ||
+        inputs.workflow.steps.length === 0,
+      anchor: "map",
+    },
+  );
 
-  return total === 0 ? 0 : filled / total;
+  return gaps;
 }
 
 export function midpointShare(inputs: AssessmentInputs): number {

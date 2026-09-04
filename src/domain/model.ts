@@ -4,7 +4,7 @@ import { MODEL_LABEL, MODEL_VERSION } from "./types";
 export { MODEL_LABEL, MODEL_VERSION };
 
 /** Product shell version — independent of scoring Model 1.0. */
-export const SHELL_VERSION = "4.0.0";
+export const SHELL_VERSION = "4.1.1";
 
 /** Category weights. Sum = 100 before conventional-automation penalty. */
 export const SCORE_WEIGHTS = {

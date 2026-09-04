@@ -22,10 +22,10 @@ export function MatrixView({
   return (
     <div className="sheet">
       <p className="sys">Decision matrix</p>
-      <h1 className="fit-heading" style={{ marginTop: 8 }}>
+      <h1 className="fit-heading page-title">
         Readiness × economic opportunity
       </h1>
-      <p className="hint" style={{ marginTop: 8 }}>
+      <p className="hint page-hint">
         Marker size is risk pressure. Click a marker to open. Upper-right tends to Build Now; lower-left to Low
         Priority. The table is the accessible index.
       </p>
@@ -66,10 +66,10 @@ export function MatrixView({
               x="64"
               y="410"
               fontFamily="IBM Plex Mono, monospace"
-              fontSize="10"
-              letterSpacing="1.4"
+              fontSize="11"
+              letterSpacing="0.8"
               fill="currentColor"
-              opacity="0.5"
+              opacity="0.72"
             >
               IMPLEMENTATION / READINESS →
             </text>
@@ -77,10 +77,10 @@ export function MatrixView({
               x="18"
               y="374"
               fontFamily="IBM Plex Mono, monospace"
-              fontSize="10"
-              letterSpacing="1.4"
+              fontSize="11"
+              letterSpacing="0.8"
               fill="currentColor"
-              opacity="0.5"
+              opacity="0.72"
               transform="rotate(-90 18 374)"
             >
               ECONOMIC OPPORTUNITY →
