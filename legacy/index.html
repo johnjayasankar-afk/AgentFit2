@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#071018" />
+  <meta name="description" content="AgentFit — map a workflow, estimate AI-agent ROI, and design a safe launch path." />
+  <title>AgentFit — AI Workflow Opportunity Mapper</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="cursor-glow" aria-hidden="true"></div>
+  <div class="mesh mesh-a" aria-hidden="true"></div><div class="mesh mesh-b" aria-hidden="true"></div><div class="grain" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="#top"><span class="mark">AF</span><span><strong>AgentFit</strong><small>WORKFLOW OPPORTUNITY MAPPER</small></span></a>
+    <nav><a href="#assess">Assess</a><a href="#architecture">Architecture</a><a href="#roadmap">Roadmap</a></nav>
+    <div class="top-actions"><button class="ghost" id="saveBtn">Save scenario</button><button class="primary mini" id="exportBtn">Export brief ↗</button></div>
+  </header>
+
+  <main id="top">
+    <section class="hero shell">
+      <div class="hero-copy reveal">
+        <div class="eyebrow"><span class="live-dot"></span> PRODUCT LAB · AGENTIC AI</div>
+        <h1>Find the workflows where an <span>AI agent</span> actually creates leverage.</h1>
+        <p>Model the economics, risk, system access, and launch path for an agentic workflow — before you spend a sprint building it.</p>
+        <div class="hero-actions"><a class="primary" href="#assess">Run an assessment ↓</a><button class="ghost" id="demoBtn">Load a demo</button></div>
+      </div>
+      <div class="hero-card spotlight-card reveal delay-1">
+        <div class="hc-top"><span>AGENT OPPORTUNITY / LIVE</span><span class="pulse">● MODELING</span></div>
+        <div class="orb-wrap"><div class="score-orb"><strong id="heroScore">78</strong><small>FIT SCORE</small></div><div class="ring r1"></div><div class="ring r2"></div></div>
+        <div class="hc-grid"><div><span>Capacity unlocked</span><strong id="heroHours">1,248 h/yr</strong></div><div><span>Value potential</span><strong id="heroValue">$118k/yr</strong></div><div><span>Recommended mode</span><strong id="heroMode">Human-approved agent</strong></div><div><span>Launch path</span><strong>Assist → Act</strong></div></div>
+      </div>
+    </section>
+
+    <section class="metrics shell reveal">
+      <div><strong>01</strong><span>Workflow economics</span><small>Hours, labor value, error cost</small></div>
+      <div><strong>02</strong><span>Agent fit</span><small>Repeatability, tools, observability</small></div>
+      <div><strong>03</strong><span>Safety design</span><small>Risk, approvals, rollback</small></div>
+      <div><strong>04</strong><span>Launch roadmap</span><small>Stage-gated productization</small></div>
+    </section>
+
+    <section class="section shell" id="assess">
+      <div class="section-head reveal"><span>01 / ASSESS</span><h2>Model the workflow, not the hype.</h2><p>Change any input. The opportunity score, ROI, architecture, and roadmap update instantly.</p></div>
+      <div class="workspace">
+        <form class="input-panel spotlight-card reveal" id="workflowForm">
+          <div class="panel-top"><div><span class="panel-index">INPUTS</span><h3>Workflow profile</h3></div><select id="templateSelect" aria-label="Workflow template"><option value="custom">Custom workflow</option><option value="incident">Incident triage</option><option value="onboarding">Client onboarding</option><option value="recon">Data reconciliation</option><option value="sales">Sales operations</option></select></div>
+          <label>Workflow name<input id="workflowName" value="Production incident triage" /></label>
+          <div class="field-grid">
+            <label>Runs / week<input type="number" id="runs" min="1" value="45" /></label>
+            <label>Minutes / run<input type="number" id="minutes" min="1" value="55" /></label>
+            <label>People involved<input type="number" id="people" min="1" value="2" /></label>
+            <label>Loaded $ / hour<input type="number" id="hourly" min="1" value="95" /></label>
+          </div>
+          <div class="range-group">
+            <label><span>Automation potential</span><strong id="automationOut">72%</strong><input type="range" id="automation" min="10" max="95" value="72" /></label>
+            <label><span>Repeatability</span><strong id="repeatOut">80%</strong><input type="range" id="repeat" min="0" max="100" value="80" /></label>
+            <label><span>Tool / API access</span><strong id="toolsOut">85%</strong><input type="range" id="tools" min="0" max="100" value="85" /></label>
+            <label><span>Observability</span><strong id="observeOut">78%</strong><input type="range" id="observe" min="0" max="100" value="78" /></label>
+          </div>
+          <div class="toggle-row"><span>Risk level</span><div class="segmented" id="riskSeg"><button type="button" data-risk="low">Low</button><button type="button" data-risk="medium" class="active">Medium</button><button type="button" data-risk="high">High</button></div></div>
+          <label class="check"><input type="checkbox" id="humanReview" checked /><span><b>Human approval before consequential actions</b><small>Recommended for medium/high-risk workflows.</small></span></label>
+        </form>
+
+        <div class="output-panel reveal delay-1">
+          <article class="fit-card spotlight-card">
+            <div class="fit-top"><div><span class="panel-index">DECISION</span><h3 id="decisionTitle">Build a human-approved agent</h3></div><div class="mini-score"><strong id="fitScore">78</strong><span>/100</span></div></div>
+            <p id="decisionText">High-value, repeatable workflow with strong system access. Start with recommendations, then graduate to approved actions once reliability is proven.</p>
+            <div class="dimension-list">
+              <div><span>Repeatability</span><i><b id="dRepeat"></b></i><em id="dRepeatNum">80</em></div>
+              <div><span>Tool access</span><i><b id="dTools"></b></i><em id="dToolsNum">85</em></div>
+              <div><span>Observability</span><i><b id="dObserve"></b></i><em id="dObserveNum">78</em></div>
+              <div><span>Risk-adjusted fit</span><i><b id="dRisk"></b></i><em id="dRiskNum">70</em></div>
+              <div><span>Economic leverage</span><i><b id="dValue"></b></i><em id="dValueNum">88</em></div>
+            </div>
+          </article>
+          <div class="roi-grid">
+            <article class="roi spotlight-card"><span>Hours returned / year</span><strong id="hoursSaved">1,248</strong><small id="hoursNote">from 2,145 baseline hours</small></article>
+            <article class="roi spotlight-card"><span>Capacity value / year</span><strong id="annualValue">$118,560</strong><small id="valueNote">before build & model costs</small></article>
+            <article class="roi spotlight-card"><span>Time saved / run</span><strong id="minutesSaved">40 min</strong><small>at modeled automation potential</small></article>
+            <article class="roi spotlight-card"><span>Suggested autonomy</span><strong id="autonomyLabel">Level 2</strong><small id="autonomyNote">recommend + approve actions</small></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shell" id="architecture">
+      <div class="section-head reveal"><span>02 / ARCHITECTURE</span><h2>Design the control system before the agent.</h2><p>The recommended architecture adapts to risk, tool access, and whether a human approval step is enabled.</p></div>
+      <div class="architecture-card spotlight-card reveal">
+        <div class="arch-header"><div><span class="panel-index">RECOMMENDED SYSTEM</span><h3 id="archTitle">Human-approved action agent</h3></div><span class="status-chip" id="riskChip">MEDIUM RISK</span></div>
+        <div class="diagram" id="diagram">
+          <div class="arch-node input"><small>01</small><strong>Trigger</strong><span id="triggerText">incident / request</span></div>
+          <div class="wire w1"><i></i></div>
+          <div class="arch-node context"><small>02</small><strong>Context</strong><span>policy + history + live state</span></div>
+          <div class="wire w2"><i></i></div>
+          <div class="arch-node agent"><small>03</small><strong>Agent</strong><span>reason · plan · select tools</span></div>
+          <div class="wire w3"><i></i></div>
+          <div class="arch-node tools"><small>04</small><strong>Tools</strong><span>read APIs + typed actions</span></div>
+          <div class="wire w4"><i></i></div>
+          <div class="arch-node approval" id="approvalNode"><small>05</small><strong>Approval</strong><span>human validates action</span></div>
+          <div class="wire w5" id="wire5"><i></i></div>
+          <div class="arch-node outcome"><small>06</small><strong>Action + trace</strong><span>execute · log · evaluate</span></div>
+        </div>
+        <div class="guardrails">
+          <div><span>CONTROL 01</span><strong>Typed tool contracts</strong><p>Constrain what the agent can do and validate every action payload.</p></div>
+          <div><span>CONTROL 02</span><strong id="control2">Human approval</strong><p id="control2Text">Require review before consequential writes until reliability clears a defined threshold.</p></div>
+          <div><span>CONTROL 03</span><strong>Evaluation + rollback</strong><p>Capture traces, measure task success, and make failed actions reversible.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shell" id="roadmap">
+      <div class="section-head reveal"><span>03 / ROADMAP</span><h2>Earn autonomy in stages.</h2><p>A good agent launch is a product progression, not a switch you flip.</p></div>
+      <div class="roadmap reveal" id="roadmapCards">
+        <article class="stage active"><span>STAGE 01</span><h3>Observe</h3><p>Instrument the workflow and establish baselines for time, errors, escalations, and success.</p><small>Exit gate: trusted baseline</small></article>
+        <article class="stage"><span>STAGE 02</span><h3>Assist</h3><p>Agent retrieves context, summarizes state, and proposes next steps without taking action.</p><small>Exit gate: ≥90% useful recommendations</small></article>
+        <article class="stage"><span>STAGE 03</span><h3>Recommend</h3><p>Agent creates structured action plans with confidence, evidence, and clear human approval.</p><small>Exit gate: target precision + review speed</small></article>
+        <article class="stage"><span>STAGE 04</span><h3>Act</h3><p id="actStageText">Execute approved actions through typed tools, with full traceability and rollback.</p><small>Exit gate: sustained reliability</small></article>
+      </div>
+      <div class="brief spotlight-card reveal">
+        <div><span class="panel-index">ONE-PAGE PRODUCT BRIEF</span><h3 id="briefTitle">Production incident triage</h3></div>
+        <div class="brief-grid"><p><b>Opportunity</b><span id="briefOpportunity">Return ~1,248 hours/year by automating repeatable investigation and coordination work.</span></p><p><b>Product thesis</b><span id="briefThesis">A tool-using agent can assemble live context, recommend remediation, and safely execute approved actions faster than manual triage.</span></p><p><b>North-star metric</b><span>Median successful task completion time, guarded by zero critical action errors.</span></p><p><b>First launch</b><span id="briefLaunch">Read-only copilot → human-approved action agent.</span></p></div>
+      </div>
+    </section>
+  </main>
+  <footer><div class="shell"><div><strong>AgentFit</strong><span>PRODUCT LAB · 2026</span></div><p>Built to make agentic product decisions legible: workflow → economics → controls → launch.</p><a href="#top">Back to top ↑</a></div></footer>
+  <dialog id="savedDialog"><button class="x" id="closeDialog">×</button><h3>Saved scenarios</h3><p>Stored locally in this browser.</p><div id="savedList"></div></dialog>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,132 +1,156 @@
-import { MODEL_VERSION } from "@/domain/model";
-import { assessmentExportSchema, assessmentRecordSchema, workspaceBackupSchema } from "@/domain/schema";
-import type { AssessmentExport, AssessmentRecord, WorkspaceBackup } from "@/domain/types";
-import { classifyPortfolio } from "@/engine/compare";
-import { createId, createRecord, db, nowIso } from "./db";
+import { z } from 'zod'
+import type { Assessment } from '../domain/types'
+import { assessmentSchema } from '../domain/types'
+import { MODEL_VERSION } from '../engine/version'
+import { assess } from '../engine/assess'
+import { newId } from './db'
 
-export function exportAssessment(record: AssessmentRecord): AssessmentExport {
-  return {
-    kind: "agentfit.assessment",
-    version: 1,
-    exportedAt: nowIso(),
-    assessment: record,
-  };
-}
+export const EXPORT_KIND = 'agentfit.export'
+export const EXPORT_FORMAT = 1
 
-export function exportWorkspace(records: AssessmentRecord[]): WorkspaceBackup {
+export const exportFileSchema = z.object({
+  kind: z.literal(EXPORT_KIND),
+  format: z.literal(EXPORT_FORMAT),
+  exportedAt: z.number(),
+  modelVersion: z.string(),
+  assessments: z.array(assessmentSchema).min(1),
+})
+export type ExportFile = z.infer<typeof exportFileSchema>
+
+export function buildExport(assessments: Assessment[]): ExportFile {
   return {
-    kind: "agentfit.workspace",
-    version: 1,
-    exportedAt: nowIso(),
+    kind: EXPORT_KIND,
+    format: EXPORT_FORMAT,
+    exportedAt: Date.now(),
     modelVersion: MODEL_VERSION,
-    assessments: records,
-  };
-}
-
-function toRecord(value: unknown): AssessmentRecord {
-  const parsed = assessmentRecordSchema.parse(value);
-  return parsed as AssessmentRecord;
-}
-
-export function parseIncoming(raw: unknown):
-  | { type: "assessment"; record: AssessmentRecord }
-  | { type: "workspace"; records: AssessmentRecord[] } {
-  const asAssessment = assessmentExportSchema.safeParse(raw);
-  if (asAssessment.success) {
-    return { type: "assessment", record: toRecord(asAssessment.data.assessment) };
+    assessments: assessments.map((a) => structuredClone(a)),
   }
-  const asWorkspace = workspaceBackupSchema.safeParse(raw);
-  if (asWorkspace.success) {
-    return { type: "workspace", records: asWorkspace.data.assessments.map(toRecord) };
-  }
-  const asRecord = assessmentRecordSchema.safeParse(raw);
-  if (asRecord.success) {
-    return { type: "assessment", record: toRecord(asRecord.data) };
-  }
-  throw new Error("This file is not a recognized AgentFit export.");
 }
 
-export async function importAssessment(
-  record: AssessmentRecord,
-  mode: "copy" | "skip",
-): Promise<string> {
-  const existing = await db.assessments.get(record.id);
-  if (existing && mode === "skip") return existing.id;
-  const next = createRecord({
-    ...record,
-    id: existing ? createId() : record.id,
-    demo: false,
-  });
-  await db.assessments.put(next);
-  return next.id;
+export interface ImportOutcome {
+  ok: boolean
+  /** Records that parsed and are ready to write. */
+  assessments: Assessment[]
+  /** Ids that already exist locally, with fresh ids assigned. */
+  renamed: number
+  /** Assessments produced by a different model version. */
+  foreignVersion: string[]
+  error: string | null
 }
 
-export async function importWorkspace(records: AssessmentRecord[]): Promise<number> {
-  let count = 0;
-  for (const record of records) {
-    await importAssessment(record, "copy");
-    count += 1;
+/**
+ * Parse and validate an export file.
+ *
+ * Nothing is ever overwritten: an incoming record whose id already exists is
+ * given a new one, so an import can only ever add. Records carrying a different
+ * model version are accepted and reported rather than rejected — the stored
+ * inputs stay valid, and the version is what tells you the derived numbers were
+ * produced by different weights.
+ */
+export function parseImport(raw: string, existingIds: Set<string>): ImportOutcome {
+  const empty: ImportOutcome = { ok: false, assessments: [], renamed: 0, foreignVersion: [], error: null }
+
+  let json: unknown
+  try {
+    json = JSON.parse(raw)
+  } catch {
+    return { ...empty, error: 'That file is not valid JSON.' }
   }
-  return count;
+
+  // Accept a bare single assessment as well as a wrapped export.
+  const single = assessmentSchema.safeParse(json)
+  const wrapped = exportFileSchema.safeParse(json)
+
+  let incoming: Assessment[]
+  let sourceVersion = MODEL_VERSION
+  if (wrapped.success) {
+    incoming = wrapped.data.assessments
+    sourceVersion = wrapped.data.modelVersion
+  } else if (single.success) {
+    incoming = [single.data]
+    sourceVersion = single.data.modelVersion
+  } else {
+    const issue = wrapped.error.issues[0]
+    return {
+      ...empty,
+      error: issue
+        ? `Not an AgentFit export: ${issue.path.join('.') || 'root'} — ${issue.message.toLowerCase()}.`
+        : 'Not a recognisable AgentFit export.',
+    }
+  }
+
+  let renamed = 0
+  const assessments = incoming.map((a) => {
+    if (!existingIds.has(a.id)) return a
+    renamed += 1
+    return { ...a, id: newId() }
+  })
+
+  const foreignVersion = [
+    ...new Set(assessments.map((a) => a.modelVersion).filter((v) => v !== MODEL_VERSION)),
+  ]
+  if (foreignVersion.length === 0 && sourceVersion !== MODEL_VERSION) foreignVersion.push(sourceVersion)
+
+  return { ok: true, assessments, renamed, foreignVersion, error: null }
 }
 
-export function toCsv(records: AssessmentRecord[]): string {
+export function download(filename: string, contents: string, type = 'application/json'): void {
+  const blob = new Blob([contents], { type })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  // Revoke on the next frame so Safari has committed the navigation.
+  requestAnimationFrame(() => URL.revokeObjectURL(url))
+}
+
+export function slug(name: string): string {
+  return (name || 'workflow').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'workflow'
+}
+
+const CSV_INJECTION = /^[=+\-@\t\r]/
+
+/** Quote a CSV field, neutralising values a spreadsheet would treat as a formula. */
+function csvCell(value: string | number): string {
+  const s = String(value)
+  const safe = CSV_INJECTION.test(s) ? `'${s}` : s
+  return `"${safe.replace(/"/g, '""')}"`
+}
+
+export function buildCsv(assessments: Assessment[]): string {
   const header = [
-    "name",
-    "archetype",
-    "fit",
-    "autonomy",
-    "pattern",
-    "readiness",
-    "capacity_hrs_week",
-    "confidence",
-    "class",
-    "steps",
-    "systems",
-    "map_pct",
-    "gate_fails",
-    "top_rpn",
-    "verdict",
-    "top_blocker",
-    "updated",
-    "model",
-  ];
-  const rows = records.map((r) =>
-    [
-      csv(r.inputs.name),
-      csv(r.inputs.archetype),
-      r.result.score,
-      csv(r.result.autonomyLabel),
-      csv(r.result.pattern),
-      csv(r.result.readiness),
-      r.result.capacity.netCapacityReturned,
-      csv(r.result.confidence),
-      csv(r.result.portfolioClass || classifyPortfolio(r.result)),
-      r.result.design.stepCount,
-      r.result.design.systemCount,
-      Math.round(r.result.design.mappedCompleteness * 100),
-      r.result.goNoGo.filter((gate) => gate.status === "fail").length,
-      r.result.fmea[0]?.rpn ?? "",
-      csv(r.result.verdict ?? ""),
-      csv(r.result.blockers[0]?.title ?? ""),
-      csv(r.updatedAt),
-      csv(r.modelVersion),
-    ].join(","),
-  );
-  return [header.join(","), ...rows].join("\n");
-}
-
-export function downloadText(filename: string, text: string, type = "application/json"): void {
-  const blob = new Blob([text], { type });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function csv(value: string): string {
-  if (/[",\n]/.test(value)) return `"${value.replaceAll('"', '""')}"`;
-  return value;
+    'Workflow', 'Archetype', 'Agent fit', 'Autonomy level', 'Autonomy', 'Pattern',
+    'Readiness', 'Classification', 'Net capacity h/wk', 'Annual capacity h',
+    'Annual capacity value', 'Build effort low (wk)', 'Build effort high (wk)',
+    'Payback months', 'Return verdict', 'Top risk', 'Next experiment',
+    'Model version', 'Updated',
+  ]
+  const rows = assessments.map((a) => {
+    const r = assess(a.input)
+    return [
+      a.input.definition.name || 'Untitled workflow',
+      a.input.definition.archetype,
+      r.fit.score,
+      r.autonomy.level,
+      r.autonomy.displayName,
+      r.pattern.pattern.name,
+      r.readiness.meta.label,
+      r.classification.label,
+      r.capacity.netCapacityHours.toFixed(1),
+      Math.round(r.capacity.annual.netCapacityHours),
+      r.capacity.annual.capacityValue === null ? '' : Math.round(r.capacity.annual.capacityValue),
+      r.investment.effortWeeks.mid > 0 ? r.investment.effortWeeks.low : '',
+      r.investment.effortWeeks.mid > 0 ? r.investment.effortWeeks.high : '',
+      r.investment.paybackMonths === null ? '' : Math.round(r.investment.paybackMonths),
+      r.investment.verdict,
+      r.risks[0]?.risk ?? '',
+      r.experiment.title,
+      a.modelVersion,
+      new Date(a.updatedAt).toISOString(),
+    ].map(csvCell).join(',')
+  })
+  return [header.map(csvCell).join(','), ...rows].join('\r\n')
 }

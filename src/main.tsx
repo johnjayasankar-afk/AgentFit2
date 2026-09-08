@@ -1,33 +1,24 @@
-import "@fontsource/schibsted-grotesk/400.css";
-import "@fontsource/schibsted-grotesk/500.css";
-import "@fontsource/ibm-plex-mono/400.css";
-import "@fontsource/ibm-plex-mono/500.css";
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import App from "./App";
-import { loadPrefs } from "./state/prefs";
-import { ErrorBoundary } from "./ui/ErrorBoundary";
-import "./index.css";
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import App from './App'
+import './styles/index.css'
 
-const bootTheme = loadPrefs().theme;
-document.documentElement.dataset.theme = bootTheme;
-const themeMeta = document.querySelector('meta[name="theme-color"]');
-if (themeMeta) {
-  themeMeta.setAttribute("content", bootTheme === "carbon" ? "#09080c" : "#f1ece4");
-}
+const root = document.getElementById('root')
+if (!root) throw new Error('Root element missing')
 
-// PWA plugin is off on Vercel (VERCEL=1). Keep this behind a static flag so the
-// virtual module is tree-shaken out of CI builds.
-if (import.meta.env.PROD && import.meta.env.VITE_ENABLE_PWA === "true") {
-  void import("virtual:pwa-register").then(({ registerSW }) => {
-    registerSW({ immediate: true });
-  });
-}
-
-createRoot(document.getElementById("root")!).render(
+createRoot(root).render(
   <StrictMode>
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
+    <App />
   </StrictMode>,
-);
+)
+
+// Offline support. Registered after load so it never competes with first paint,
+// and only in a production build — a stale shell during development is worse
+// than no shell at all.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    void navigator.serviceWorker.register('/sw.js').catch(() => {
+      // Offline support is an enhancement; the app works without it.
+    })
+  })
+}

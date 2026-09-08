@@ -1,396 +1,287 @@
-export const MODEL_VERSION = "1.0" as const;
-export const MODEL_LABEL = "AgentFit Model 1.0";
+import { z } from 'zod'
 
-export type ModelVersion = typeof MODEL_VERSION;
+/**
+ * AgentFit domain model.
+ *
+ * Everything a user enters lives in `AssessmentInput`. Everything the product
+ * asserts is derived from that input by pure functions in `src/engine`, tagged
+ * with the `modelVersion` that produced it. Derived state is never the source
+ * of truth — it can always be regenerated from inputs + model version.
+ */
 
-export type VolumePeriod = "day" | "week" | "month";
+/**
+ * Every judgement dimension in AgentFit is a 1–5 ordinal with published anchors.
+ * Declared as a literal union rather than a bounded integer so the narrow type
+ * survives inference and the engines can exhaustively key on it.
+ */
+export const scoreSchema = z.union([
+  z.literal(1),
+  z.literal(2),
+  z.literal(3),
+  z.literal(4),
+  z.literal(5),
+])
+export type Score = z.infer<typeof scoreSchema>
 
-export type WorkflowArchetype =
-  | "operations_setup"
-  | "support_triage"
-  | "payment_exception"
-  | "document_review"
-  | "reconciliation"
-  | "research"
-  | "data_analysis"
-  | "client_onboarding"
-  | "compliance_review"
-  | "internal_approval"
-  | "monitoring"
-  | "scheduling"
-  | "software_development"
-  | "reporting"
-  | "custom";
+export const periodSchema = z.enum(['day', 'week', 'month'])
+export type Period = z.infer<typeof periodSchema>
 
-export type Scale = 1 | 2 | 3 | 4 | 5;
-
-export type DimensionPolarity = "raises" | "constrains" | "mixed";
-
-export type AutonomyLevel = 0 | 1 | 2 | 3 | 4 | 5;
-
-export type AutonomyLabel =
-  | "Conventional Software"
-  | "Copilot"
-  | "Assistive Agent"
-  | "Supervised Agent"
-  | "Bounded Agent"
-  | "Autonomous System";
-
-export type SystemPattern =
-  | "Human-Led Process"
-  | "Deterministic Automation"
-  | "AI Assist"
-  | "Retrieval + Assist"
-  | "Tool-Using Assistant"
-  | "Supervised Tool Agent"
-  | "Bounded Execution Agent"
-  | "Multi-Agent Orchestration";
-
-export type ReadinessLevel =
-  | "Not Ready"
-  | "Discovery Ready"
-  | "Pilot Ready"
-  | "Production Candidate";
-
-export type ConfidenceLevel = "Low" | "Medium" | "High";
-
-export type PortfolioClass =
-  | "Build Now"
-  | "De-risk First"
-  | "Assist, Don't Agentify"
-  | "Automate Conventionally"
-  | "Low Priority";
-
-export type ControlId =
-  | "human_approval"
-  | "read_only_tools"
-  | "typed_actions"
-  | "allowlisted_tools"
-  | "transaction_limits"
-  | "rate_limits"
-  | "confidence_threshold"
-  | "deterministic_validation"
-  | "schema_validation"
-  | "pre_action_simulation"
-  | "dual_approval"
-  | "audit_log"
-  | "rollback"
-  | "timeout"
-  | "restricted_data_access"
-  | "exception_escalation"
-  | "sandbox_execution"
-  | "idempotency"
-  | "reconciliation"
-  | "monitoring";
-
-export interface ControlPrimitive {
-  id: ControlId;
-  label: string;
-  rationale: string;
+export const PERIOD_PER_YEAR: Record<Period, number> = {
+  day: 250, // working days
+  week: 52,
+  month: 12,
 }
 
-export interface EconomicsInputs {
-  volume: number;
-  volumePeriod: VolumePeriod;
-  minutesPerCase: number;
-  peopleInvolved: number | null;
-  loadedHourlyCost: number | null;
-  variability: Scale;
+export const PERIOD_LABEL: Record<Period, string> = {
+  day: 'per day',
+  week: 'per week',
+  month: 'per month',
 }
 
-export interface StructureInputs {
-  ruleClarity: Scale;
-  inputStructure: Scale;
-  contextBreadth: Scale;
-  exceptionRate: Scale;
+/* ------------------------------------------------------------------ *
+ * Input groups
+ * ------------------------------------------------------------------ */
+
+export const definitionSchema = z.object({
+  name: z.string().max(120),
+  description: z.string().max(600),
+  archetype: z.string(),
+})
+export type WorkflowDefinition = z.infer<typeof definitionSchema>
+
+export const economicsSchema = z.object({
+  /** Cases handled per `period`. */
+  volume: z.number().min(0).max(1_000_000),
+  period: periodSchema,
+  /** Average hands-on human minutes per case, across all participants. */
+  minutesPerCase: z.number().min(0).max(10_000),
+  /** Optional. Number of people who touch a single case. */
+  peopleInvolved: z.number().min(1).max(200).nullable(),
+  /** Optional. Fully loaded cost per human hour, in the workspace currency. */
+  loadedHourlyCost: z.number().min(0).max(10_000).nullable(),
+  /**
+   * Optional. Fully loaded cost of one engineer-week, in the same currency.
+   * Supplied separately from the workflow's hourly cost because the people who
+   * would build the system are rarely the people who run the workflow.
+   */
+  engineeringWeeklyCost: z.number().min(0).max(1_000_000).nullable().default(null),
+  /** How much case-to-case complexity varies. */
+  variability: scoreSchema,
+})
+export type WorkflowEconomics = z.infer<typeof economicsSchema>
+
+export const structureSchema = z.object({
+  ruleClarity: scoreSchema,
+  inputStructure: scoreSchema,
+  contextBreadth: scoreSchema,
+  exceptionRate: scoreSchema,
+  humanJudgment: scoreSchema,
+})
+export type WorkflowStructure = z.infer<typeof structureSchema>
+
+export const systemsSchema = z.object({
+  systemAccess: scoreSchema,
+  toolingReadiness: scoreSchema,
+  observability: scoreSchema,
+  verification: scoreSchema,
+  permissionComplexity: scoreSchema,
+})
+export type SystemReadiness = z.infer<typeof systemsSchema>
+
+export const riskSchema = z.object({
+  reversibility: scoreSchema,
+  failureConsequence: scoreSchema,
+  blastRadius: scoreSchema,
+  regulatorySensitivity: scoreSchema,
+  dataSensitivity: scoreSchema,
+})
+export type ActionRisk = z.infer<typeof riskSchema>
+
+export const oversightSchema = z.object({
+  reviewCost: scoreSchema,
+  /** 5 = requiring approval would erase most of the workflow benefit. */
+  approvalLatencyImpact: scoreSchema,
+  escalationAvailability: scoreSchema,
+  feedbackAvailability: scoreSchema,
+})
+export type HumanOversight = z.infer<typeof oversightSchema>
+
+/**
+ * Capacity assumptions. `null` means "use the value the model derives from the
+ * assessment"; a number means the user has overridden it. Storing the
+ * distinction keeps derived defaults live as other inputs change, while making
+ * every override explicit and visible.
+ */
+export const assumptionsSchema = z.object({
+  /** Share of cases the system handles end-to-end without hand-off. */
+  coveragePct: z.number().min(0).max(100).nullable(),
+  /** Share of hands-on time removed on covered cases. */
+  timeReductionPct: z.number().min(0).max(100).nullable(),
+  /** Share of covered cases a human reviews. */
+  reviewRatePct: z.number().min(0).max(100).nullable(),
+  /** Human minutes spent reviewing one reviewed case. */
+  reviewMinutes: z.number().min(0).max(600).nullable(),
+  /** Human minutes spent handling one escalated exception. */
+  exceptionMinutes: z.number().min(0).max(600).nullable(),
+})
+export type CapacityAssumptions = z.infer<typeof assumptionsSchema>
+
+/* ------------------------------------------------------------------ *
+ * Assessment
+ * ------------------------------------------------------------------ */
+
+export const riskRegisterEditSchema = z.object({
+  mitigation: z.string().max(600).optional(),
+  owner: z.string().max(120).optional(),
+  dismissed: z.boolean().optional(),
+})
+export type RiskRegisterEdit = z.infer<typeof riskRegisterEditSchema>
+
+export const pilotEditSchema = z.object({
+  objective: z.string().max(600).optional(),
+  scope: z.string().max(600).optional(),
+  users: z.string().max(600).optional(),
+  allowed: z.string().max(1200).optional(),
+  disallowed: z.string().max(1200).optional(),
+  approvalBoundary: z.string().max(600).optional(),
+  fallback: z.string().max(600).optional(),
+  logging: z.string().max(600).optional(),
+  duration: z.string().max(200).optional(),
+  exitCriteria: z.string().max(1200).optional(),
+})
+export type PilotEdit = z.infer<typeof pilotEditSchema>
+
+export const experimentEditSchema = z.object({
+  title: z.string().max(200).optional(),
+  criteria: z.array(z.string().max(300)).max(12).optional(),
+})
+export type ExperimentEdit = z.infer<typeof experimentEditSchema>
+
+export const assessmentInputSchema = z.object({
+  definition: definitionSchema,
+  economics: economicsSchema,
+  structure: structureSchema,
+  systems: systemsSchema,
+  risk: riskSchema,
+  oversight: oversightSchema,
+  assumptions: assumptionsSchema,
+})
+export type AssessmentInput = z.infer<typeof assessmentInputSchema>
+
+/**
+ * A point-in-time snapshot, written on every save. Only inputs are stored —
+ * derived figures are recomputed for display — but the model version that was
+ * current when the revision was taken travels with it, so a historical record
+ * can say when it predates the weights being used to read it.
+ */
+export const revisionSchema = z.object({
+  at: z.number(),
+  modelVersion: z.string(),
+  input: assessmentInputSchema,
+  notes: z.string().max(4000).default(''),
+})
+export type Revision = z.infer<typeof revisionSchema>
+
+/** Bounded so a long-lived assessment cannot grow without limit. */
+export const MAX_REVISIONS = 20
+
+/**
+ * What the team actually decided.
+ *
+ * AgentFit produces a recommendation; it does not make the decision, and a real
+ * team frequently lands somewhere else — proceeding at a different autonomy
+ * level, deferring, or declining outright. Without somewhere to record that,
+ * the assessment is a calculator output rather than a decision record, and the
+ * reason for any divergence lives only in someone's memory.
+ */
+export const decisionStatusSchema = z.enum(['undecided', 'proceeding', 'deferred', 'declined'])
+export type DecisionStatus = z.infer<typeof decisionStatusSchema>
+
+export const decisionSchema = z.object({
+  status: decisionStatusSchema.default('undecided'),
+  /** The level the team chose. Null means they accepted the recommendation. */
+  chosenLevel: z.number().int().min(0).max(5).nullable().default(null),
+  /** Who is accountable for the decision. */
+  owner: z.string().max(120).default(''),
+  decidedAt: z.number().nullable().default(null),
+  /** Why, in the team's own words. Especially important when it diverges. */
+  rationale: z.string().max(2000).default(''),
+  /** Free text for when the decision should be revisited. */
+  revisit: z.string().max(200).default(''),
+})
+export type Decision = z.infer<typeof decisionSchema>
+
+export const EMPTY_DECISION: Decision = {
+  status: 'undecided',
+  chosenLevel: null,
+  owner: '',
+  decidedAt: null,
+  rationale: '',
+  revisit: '',
 }
 
-export interface SystemInputs {
-  systemAccess: Scale;
-  toolingReadiness: Scale;
-  permissionComplexity: Scale;
-  observability: Scale;
-  verification: Scale;
-}
+export const assessmentSchema = z.object({
+  id: z.string(),
+  /** Storage-format version, independent of the scoring `modelVersion`. */
+  schemaVersion: z.number().int().min(1).default(1),
+  modelVersion: z.string(),
+  input: assessmentInputSchema,
+  /** Newest first. Written on save, never on edit. */
+  revisions: z.array(revisionSchema).max(MAX_REVISIONS).default([]),
+  decision: decisionSchema.default(EMPTY_DECISION),
+  notes: z.string().max(4000).default(''),
+  /** Dimension keys the user has explicitly adjusted. Drives confidence. */
+  touched: z.array(z.string()).default([]),
+  riskEdits: z.record(z.string(), riskRegisterEditSchema).default({}),
+  pilotEdits: pilotEditSchema.default({}),
+  experimentEdits: experimentEditSchema.default({}),
+  archived: z.boolean().default(false),
+  /** True for assessments seeded from shipped examples. */
+  example: z.boolean().default(false),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+})
+export type Assessment = z.infer<typeof assessmentSchema>
 
-export interface RiskInputs {
-  reversibility: Scale;
-  failureConsequence: Scale;
-  blastRadius: Scale;
-  humanJudgment: Scale;
-  regulatorySensitivity: Scale;
-}
+/* ------------------------------------------------------------------ *
+ * Dimension registry keys
+ * ------------------------------------------------------------------ */
 
-export interface HumanLoopInputs {
-  reviewCost: Scale;
-  approvalLatency: Scale;
-  escalationAvailability: Scale;
-  feedbackAvailability: Scale;
-}
+export const DIMENSION_GROUPS = [
+  'economics',
+  'structure',
+  'systems',
+  'risk',
+  'oversight',
+] as const
+export type GroupId = (typeof DIMENSION_GROUPS)[number]
 
-export type WorkflowActor = "human" | "system" | "either";
+/** Keys of every 1–5 ordinal dimension, addressed as `group.field`. */
+export type DimensionKey =
+  | 'economics.variability'
+  | 'structure.ruleClarity'
+  | 'structure.inputStructure'
+  | 'structure.contextBreadth'
+  | 'structure.exceptionRate'
+  | 'structure.humanJudgment'
+  | 'systems.systemAccess'
+  | 'systems.toolingReadiness'
+  | 'systems.observability'
+  | 'systems.verification'
+  | 'systems.permissionComplexity'
+  | 'risk.reversibility'
+  | 'risk.failureConsequence'
+  | 'risk.blastRadius'
+  | 'risk.regulatorySensitivity'
+  | 'risk.dataSensitivity'
+  | 'oversight.reviewCost'
+  | 'oversight.approvalLatencyImpact'
+  | 'oversight.escalationAvailability'
+  | 'oversight.feedbackAvailability'
 
-export interface WorkflowStep {
-  id: string;
-  name: string;
-  actor: WorkflowActor;
-  action: string;
-  systems: string[];
-  failureMode: string;
-  reversible: boolean;
-}
-
-export interface WorkflowMap {
-  steps: WorkflowStep[];
-}
-
-export type SystemAccessLevel = "none" | "read" | "write" | "admin";
-
-export interface SystemAsset {
-  id: string;
-  name: string;
-  access: SystemAccessLevel;
-  criticality: Scale;
-  notes: string;
-}
-
-export interface SystemsInventory {
-  systems: SystemAsset[];
-}
-
-export interface AssessmentInputs {
-  name: string;
-  description: string;
-  archetype: WorkflowArchetype;
-  economics: EconomicsInputs;
-  structure: StructureInputs;
-  systems: SystemInputs;
-  risk: RiskInputs;
-  humanLoop: HumanLoopInputs;
-  /** Explicit process map — turns the assessment from scales into a designed workflow. */
-  workflow: WorkflowMap;
-  /** Named systems the agent would touch. Complements scalar system readiness. */
-  inventory: SystemsInventory;
-}
-
-export interface EconomicAssumptions {
-  coverage: number;
-  timeReduction: number;
-  reviewMinutesPerCase: number;
-}
-
-export interface ScoreBreakdown {
-  economicOpportunity: number;
-  workflowStructure: number;
-  technicalReadiness: number;
-  controllability: number;
-  riskSuitability: number;
-  humanJudgmentSuitability: number;
-  conventionalPenalty: number;
-  total: number;
-}
-
-export interface CapacityModel {
-  weeklyCases: number;
-  monthlyCases: number;
-  manualHoursWeek: number;
-  manualHoursMonth: number;
-  potentialAutomatedHours: number;
-  reviewHours: number;
-  netCapacityReturned: number;
-  monthlyLaborCost: number | null;
-  annualLaborCost: number | null;
-  annualCapacityValue: number | null;
-  coverageUsed: number;
-  timeReductionUsed: number;
-  reviewMinutesUsed: number;
-}
-
-export interface Explanation {
-  strongSignals: string[];
-  limitingFactors: string[];
-  therefore: string;
-}
-
-export interface PathStep {
-  title: string;
-  detail: string;
-  dimension: string;
-}
-
-export interface NextExperiment {
-  title: string;
-  rationale: string;
-  successCriteria: string[];
-}
-
-export interface PilotDesign {
-  scope: string;
-  userGroup: string;
-  allowedActions: string[];
-  disallowedActions: string[];
-  approvalBoundary: string;
-  fallbackBehavior: string;
-  loggingRequirement: string;
-  evaluationMetrics: string[];
-  exitCriteria: string[];
-}
-
-export interface EvalMetric {
-  id: string;
-  label: string;
-  why: string;
-}
-
-export interface RiskItem {
-  id: string;
-  risk: string;
-  why: string;
-  severity: 1 | 2 | 3 | 4 | 5;
-  mitigation: string;
-}
-
-export interface FmeaItem {
-  id: string;
-  failure: string;
-  cause: string;
-  effect: string;
-  severity: 1 | 2 | 3 | 4 | 5;
-  occurrence: 1 | 2 | 3 | 4 | 5;
-  detection: 1 | 2 | 3 | 4 | 5;
-  rpn: number;
-  mitigation: string;
-  source: "workflow" | "risk" | "system";
-}
-
-export type GateStatus = "pass" | "warn" | "fail" | "unknown";
-
-export interface GoNoGoGate {
-  id: string;
-  label: string;
-  status: GateStatus;
-  detail: string;
-  category: "fit" | "autonomy" | "readiness" | "controls" | "design" | "economics";
-  /** One-line control-loop hint shown on fail/warn. */
-  fixHint?: string;
-  /** Left-pane or result-tab target for the fix path. */
-  fixTarget?: "map" | "inventory" | "economics" | "diagnosis" | "design" | "risks" | "recommend";
-}
-
-export interface DesignSummary {
-  stepCount: number;
-  systemCount: number;
-  writeSystemCount: number;
-  irreversibleSteps: number;
-  humanOnlySteps: number;
-  mappedCompleteness: number;
-}
-
-export interface ArchitectureNode {
-  id: string;
-  label: string;
-}
-
-export interface SensitivityRow {
-  key: string;
-  label: string;
-  fitDelta: number;
-  autonomyDelta: number;
-  leverage: "high" | "medium" | "low";
-}
-
-export interface AutonomyBlocker {
-  id: string;
-  title: string;
-  detail: string;
-}
-
-export interface EvaluationResult {
-  modelVersion: ModelVersion;
-  modelLabel: string;
-  score: number;
-  breakdown: ScoreBreakdown;
-  autonomy: AutonomyLevel;
-  autonomyLabel: AutonomyLabel;
-  pattern: SystemPattern;
-  controlPosture: string;
-  controlsRequired: ControlPrimitive[];
-  controlsBeforeAutonomyIncrease: ControlPrimitive[];
-  readiness: ReadinessLevel;
-  readinessNote: string;
-  confidence: ConfidenceLevel;
-  confidenceReasons: string[];
-  capacity: CapacityModel;
-  explanation: Explanation;
-  pathToNextAutonomy: PathStep[];
-  experiment: NextExperiment;
-  pilot: PilotDesign;
-  evaluationPlan: EvalMetric[];
-  risks: RiskItem[];
-  fmea: FmeaItem[];
-  goNoGo: GoNoGoGate[];
-  design: DesignSummary;
-  architecture: ArchitectureNode[];
-  conventionalAffinity: number;
-  blockers: AutonomyBlocker[];
-  portfolioClass: PortfolioClass;
-  completeness: number;
-  verdict: string;
-  field: {
-    x: number;
-    y: number;
-    zone: "assist" | "supervised" | "bounded";
-  };
-}
-
-export interface AssessmentRecord {
-  id: string;
-  modelVersion: ModelVersion;
-  createdAt: string;
-  updatedAt: string;
-  archived: boolean;
-  demo: boolean;
-  notes: string;
-  inputs: AssessmentInputs;
-  assumptions: EconomicAssumptions;
-  result: EvaluationResult;
-  scenarioInputs: AssessmentInputs | null;
-  editedSuccessCriteria: string[] | null;
-  editedRisks: RiskItem[] | null;
-  editedFmea: FmeaItem[] | null;
-  editedPilot: PilotDesign | null;
-}
-
-export interface WorkspaceBackup {
-  kind: "agentfit.workspace";
-  version: 1;
-  exportedAt: string;
-  modelVersion: ModelVersion;
-  assessments: AssessmentRecord[];
-}
-
-export interface AssessmentExport {
-  kind: "agentfit.assessment";
-  version: 1;
-  exportedAt: string;
-  assessment: AssessmentRecord;
-}
-
-export type AppView =
-  | "welcome"
-  | "assess"
-  | "library"
-  | "compare"
-  | "matrix"
-  | "methodology"
-  | "settings";
-
-export type ResultTab =
-  | "recommendation"
-  | "design"
-  | "scenario"
-  | "sensitivity"
-  | "pilot"
-  | "risks"
-  | "gates"
-  | "brief";
+/**
+ * Directionality of a dimension with respect to *autonomy readiness*.
+ * `tension` marks dimensions that are neither — they raise the pressure for
+ * autonomy without conferring any of the readiness that would justify it.
+ */
+export type Polarity = 'raises' | 'lowers' | 'tension'

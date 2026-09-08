@@ -1,0 +1,615 @@
+@import 'tailwindcss';
+
+/* ==================================================================
+   AgentFit — visual system
+
+   Graphite and warm porcelain. Editorial sans for language, technical
+   mono for system labels. Structure comes from rules, grids and space
+   rather than from cards, radii and shadows.
+   ================================================================== */
+
+@theme {
+  --font-sans: ui-sans-serif, -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  --radius-none: 0px;
+}
+
+:root {
+  color-scheme: light;
+
+  --paper: #f2f1ec;
+  --paper-sunk: #eae9e3;
+  --paper-raised: #f7f6f2;
+  --ink: #14171c;
+  --ink-soft: #3a4048;
+  /* The grey ladder, tuned so every step clears WCAG AA for normal text on the
+     *worst* ground it can land on — paper, sunk or raised — not just on paper.
+     Light: 14.8 / 8.6 / 6.1 / 4.6 at worst. Text that cannot be read is not
+     de-emphasised, it is decoration, and this product puts real content in its
+     quietest tone: dimension rationales, gate reasons, figure captions.
+     Measured, not eyeballed. */
+  --muted: #51565c;
+  --muted-soft: #646970;
+
+  --hair: rgba(20, 23, 28, 0.13);
+  --hair-strong: rgba(20, 23, 28, 0.28);
+  --hair-faint: rgba(20, 23, 28, 0.07);
+
+  /* The single accent. Used for the current-state marker, the active rung,
+     and nothing decorative. */
+  --signal: #9a4526;
+  --signal-soft: rgba(154, 69, 38, 0.13);
+
+  --focus: #14171c;
+
+  --shell: min(1420px, calc(100vw - 64px));
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --paper: #0d1014;
+  --paper-sunk: #090b0e;
+  --paper-raised: #141920;
+  --ink: #e8e9eb;
+  --ink-soft: #bcc0c6;
+  /* Dark: 14.5 / 9.7 / 5.7 / 4.6 at worst. */
+  --muted: #8d939b;
+  --muted-soft: #7c828a;
+
+  --hair: rgba(232, 233, 235, 0.15);
+  --hair-strong: rgba(232, 233, 235, 0.34);
+  --hair-faint: rgba(232, 233, 235, 0.08);
+
+  --signal: #d98a63;
+  --signal-soft: rgba(217, 138, 99, 0.16);
+
+  --focus: #e8e9eb;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  /* One focus treatment across the product: a hard offset ring, never a glow. */
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  h1, h2, h3, h4 {
+    margin: 0;
+    font-weight: 500;
+    letter-spacing: -0.032em;
+  }
+}
+
+@layer components {
+  .shell {
+    width: var(--shell);
+    margin-inline: auto;
+  }
+
+  /* --- technical micro-labels ---------------------------------- */
+  .mono {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .mono-sm {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .mono-plain {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* --- editorial display --------------------------------------- */
+  .display {
+    font-size: clamp(38px, 5.2vw, 66px);
+    line-height: 0.98;
+    letter-spacing: -0.048em;
+    font-weight: 500;
+  }
+
+  .display-sm {
+    font-size: clamp(26px, 2.9vw, 38px);
+    line-height: 1.04;
+    letter-spacing: -0.038em;
+    font-weight: 500;
+  }
+
+  /* Large readouts. Tabular, tight, and optically aligned. */
+  .readout {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.045em;
+    font-weight: 500;
+    line-height: 0.9;
+  }
+
+  /* --- rules ---------------------------------------------------- */
+  .rule {
+    border: 0;
+    border-top: 1px solid var(--hair);
+    margin: 0;
+  }
+
+  .rule-strong {
+    border: 0;
+    border-top: 1px solid var(--hair-strong);
+    margin: 0;
+  }
+
+  /* --- controls -------------------------------------------------- */
+  .field {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--hair-strong);
+    padding: 7px 0;
+    font-size: 14px;
+    color: var(--ink);
+    transition: border-color 0.15s ease;
+  }
+
+  .field::placeholder {
+    color: var(--muted-soft);
+  }
+
+  .field:hover {
+    border-bottom-color: var(--ink-soft);
+  }
+
+  .field:focus {
+    outline: none;
+    border-bottom-color: var(--ink);
+  }
+
+  .field:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  /* Numeric fields sit right-aligned so columns of values line up. */
+  .field-num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .field-num::-webkit-outer-spin-button,
+  .field-num::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .field-num[type='number'] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
+  /* --- buttons ---------------------------------------------------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 34px;
+    padding-inline: 14px;
+    border: 1px solid var(--hair-strong);
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--ink);
+    background: transparent;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .btn:hover:not(:disabled) {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  .btn:disabled {
+    opacity: 0.36;
+    cursor: not-allowed;
+  }
+
+  .btn-primary {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+
+  .btn-quiet {
+    border-color: transparent;
+    padding-inline: 8px;
+    color: var(--muted);
+  }
+
+  .btn-quiet:hover:not(:disabled) {
+    background: transparent;
+    border-color: transparent;
+    color: var(--ink);
+  }
+
+  /* Underlined text action — the prototype's primary link idiom. */
+  .link-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--hair-strong);
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    font-weight: 500;
+    transition: border-color 0.18s ease, color 0.18s ease;
+  }
+
+  .link-action:hover {
+    border-bottom-color: var(--ink);
+  }
+
+  /* --- panels ------------------------------------------------------ */
+  /* Used sparingly: the instrument readout and modal surfaces only. */
+  .panel {
+    background: var(--paper-raised);
+    border: 1px solid var(--hair);
+  }
+
+  .sunk {
+    background: var(--paper-sunk);
+  }
+
+  /* --- tabular data -------------------------------------------------- */
+  .grid-row {
+    display: grid;
+    align-items: baseline;
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  /* --- scrollbars ----------------------------------------------------- */
+  .thin-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--hair-strong) transparent;
+  }
+
+  .thin-scroll::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .thin-scroll::-webkit-scrollbar-thumb {
+    background: var(--hair-strong);
+  }
+
+  .thin-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@layer utilities {
+  .text-muted { color: var(--muted); }
+  .text-soft { color: var(--ink-soft); }
+  .text-faint { color: var(--muted-soft); }
+  .text-signal { color: var(--signal); }
+  .bg-signal-soft { background: var(--signal-soft); }
+  .border-hair { border-color: var(--hair); }
+  .border-hair-strong { border-color: var(--hair-strong); }
+  .border-hair-faint { border-color: var(--hair-faint); }
+
+  /* Numbers that transition between values without drawing attention. */
+  .tnum { font-variant-numeric: tabular-nums; }
+}
+
+/* ==================================================================
+   Range input — the product's primary instrument.
+   Styled from scratch in both engines so the geometry is identical.
+   ================================================================== */
+
+.af-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 22px;
+  background: transparent;
+  cursor: pointer;
+  display: block;
+  margin: 0;
+}
+
+.af-range::-webkit-slider-runnable-track {
+  height: 1px;
+  background: var(--hair-strong);
+  border: 0;
+}
+
+.af-range::-moz-range-track {
+  height: 1px;
+  background: var(--hair-strong);
+  border: 0;
+}
+
+.af-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 3px;
+  height: 18px;
+  margin-top: -8.5px;
+  background: var(--ink);
+  border: 0;
+  border-radius: 0;
+  transition: height 0.14s ease, margin-top 0.14s ease, background-color 0.14s ease;
+}
+
+.af-range::-moz-range-thumb {
+  width: 3px;
+  height: 18px;
+  background: var(--ink);
+  border: 0;
+  border-radius: 0;
+  transition: height 0.14s ease, background-color 0.14s ease;
+}
+
+.af-range:hover::-webkit-slider-thumb,
+.af-range:focus-visible::-webkit-slider-thumb {
+  height: 22px;
+  margin-top: -10.5px;
+}
+
+.af-range:hover::-moz-range-thumb,
+.af-range:focus-visible::-moz-range-thumb {
+  height: 22px;
+}
+
+.af-range:focus-visible {
+  outline: none;
+}
+
+.af-range:focus-visible::-webkit-slider-thumb {
+  background: var(--signal);
+  box-shadow: 0 0 0 1px var(--paper), 0 0 0 3px var(--focus);
+}
+
+.af-range:focus-visible::-moz-range-thumb {
+  background: var(--signal);
+  box-shadow: 0 0 0 1px var(--paper), 0 0 0 3px var(--focus);
+}
+
+/* Tick marks sit behind the track and never move. */
+.af-ticks {
+  position: absolute;
+  inset-inline: 0;
+  top: 10px;
+  height: 1px;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.af-ticks span {
+  width: 1px;
+  height: 5px;
+  background: var(--hair-strong);
+  transform: translateY(-2px);
+}
+
+.af-ticks span[data-on='true'] {
+  background: var(--ink);
+  height: 7px;
+  transform: translateY(-3px);
+}
+
+/* Comparison cards fan out to one column per workflow once there is room. */
+@media (min-width: 1024px) {
+  .grid:has(> .compare-card) {
+    grid-template-columns: repeat(var(--compare-cols, 2), minmax(0, 1fr));
+  }
+}
+
+/* A value the grounding notice has just scrolled to. Marks it for long enough
+   to find, without leaving a permanent state on the page. */
+.af-revealable {
+  scroll-margin-top: 128px;
+  position: relative;
+}
+
+.af-revealable::before {
+  content: '';
+  position: absolute;
+  inset: -6px -10px;
+  border-left: 2px solid var(--signal);
+  background: var(--signal-soft);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+}
+
+.af-revealable[data-revealed='true']::before {
+  opacity: 1;
+  transition: opacity 0.12s ease;
+}
+
+/* ==================================================================
+   Motion — used only to make a state change legible.
+   ================================================================== */
+
+@keyframes af-fade-up {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.af-enter {
+  animation: af-fade-up 0.24s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+}
+
+/* --- guided review: the five anchors as a choice --------------------- *
+ *
+ * A row is a whole statement to read, so the hit area is the row and the
+ * hover fill is the only thing that moves. The selected row is marked with a
+ * rule in the signal colour rather than a fill, because a filled row would
+ * out-shout the answer itself.
+ */
+.af-anchor {
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.af-anchor:hover {
+  background: var(--paper-raised);
+}
+
+.af-anchor:has(input:checked) {
+  position: relative;
+  background: transparent;
+}
+
+.af-anchor:has(input:checked)::before {
+  content: '';
+  position: absolute;
+  inset: -1px auto -1px -10px;
+  width: 2px;
+  background: var(--signal);
+}
+
+/* The input is visually hidden, so its focus ring has to be drawn by the row. */
+.af-anchor:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==================================================================
+   Print — the decision brief is a deliverable, not a screenshot.
+   ================================================================== */
+
+@page {
+  margin: 16mm 14mm;
+}
+
+@media print {
+  /* Matches the specificity of the dark-theme selector so the print palette
+     wins regardless of the theme the page was being read in. Without this,
+     printing from dark mode produces a black page. */
+  :root,
+  :root[data-theme='dark'],
+  :root[data-theme='light'] {
+    color-scheme: light;
+    --paper: #ffffff;
+    --paper-raised: #ffffff;
+    --paper-sunk: #ffffff;
+    --ink: #000000;
+    --ink-soft: #1a1a1a;
+    --muted: #444444;
+    --muted-soft: #555555;
+    --hair: rgba(0, 0, 0, 0.25);
+    --hair-strong: rgba(0, 0, 0, 0.5);
+    --hair-faint: rgba(0, 0, 0, 0.14);
+    --signal: #000000;
+    --shell: 100%;
+  }
+
+  html,
+  body {
+    background: #fff;
+    font-size: 10.5pt;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-block {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .print-page-break {
+    break-before: page;
+    page-break-before: always;
+  }
+
+  a[href]::after {
+    content: '';
+  }
+}

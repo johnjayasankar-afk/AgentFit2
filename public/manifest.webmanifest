@@ -1,18 +1,10 @@
 {
-  "name": "AgentFit",
+  "name": "AgentFit — when should a workflow get an agent?",
   "short_name": "AgentFit",
-  "description": "When should a workflow get an agent?",
-  "theme_color": "#f1ece4",
-  "background_color": "#f1ece4",
-  "display": "standalone",
+  "description": "Scores economics, reversibility, system access, and autonomy before anyone writes an orchestration graph.",
   "start_url": "/",
-  "scope": "/",
-  "icons": [
-    {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
-  ]
+  "display": "standalone",
+  "background_color": "#f2f1ec",
+  "theme_color": "#f2f1ec",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
 }
