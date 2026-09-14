@@ -88,6 +88,11 @@ export function FirstRun() {
           })}
         </div>
       )}
+
+      <p className="text-faint footer-labs mt-16 text-[11px]">
+        An independent product by <a href="https://johnjayasankar.com">John Jayasankar</a>, part of{' '}
+        <a href="https://labs.johnjayasankar.com">Labs</a>.
+      </p>
     </div>
   )
 }

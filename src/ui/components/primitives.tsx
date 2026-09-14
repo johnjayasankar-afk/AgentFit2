@@ -200,7 +200,11 @@ export function Segmented<T extends string>({
   }
 
   return (
-    <div role="radiogroup" aria-label={label} className="border-hair-strong inline-flex border">
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className="border-hair-strong inline-flex overflow-hidden rounded-full border"
+    >
       {options.map((o) => {
         const active = o.value === value
         return (
@@ -246,7 +250,7 @@ export function Tag({ children, active }: { children: ReactNode; active?: boolea
   return (
     <span
       className={clsx(
-        'mono-sm inline-flex h-[22px] items-center border px-2',
+        'mono-sm inline-flex h-[22px] items-center rounded-full border px-2.5',
         active
           ? 'border-[var(--signal)] text-signal bg-signal-soft'
           : 'border-hair-strong text-muted',

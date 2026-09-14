@@ -81,7 +81,7 @@ function Header() {
           aria-label="AgentFit — go to assessment"
         >
           <span
-            className="mono-sm grid h-[24px] w-[24px] shrink-0 place-items-center border border-[var(--ink)] tracking-normal"
+            className="brand-tile mono-sm grid h-[26px] w-[26px] shrink-0 place-items-center tracking-normal"
             aria-hidden="true"
           >
             AF
@@ -431,6 +431,10 @@ function Shell() {
             ⌘K commands
           </button>
         </div>
+        <p className="shell text-faint footer-labs -mt-2 pb-6 text-[11px]">
+          An independent product by <a href="https://johnjayasankar.com">John Jayasankar</a>, part of{' '}
+          <a href="https://labs.johnjayasankar.com">Labs</a>.
+        </p>
       </footer>
       {paletteOpen && <CommandPalette commands={commands} onClose={() => setPaletteOpen(false)} />}
       <Toast />

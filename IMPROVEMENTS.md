@@ -5,6 +5,56 @@ earlier work instead of relitigating it. Newest first.
 
 ---
 
+## Cycle 10 — Labs family: the same instrument, in the family's design language
+
+**Why.** AgentFit sits beside RideLens, RailDrop and Daylight on
+labs.johnjayasankar.com, and each of those now shares one design language with
+johnjayasankar.com. AgentFit was already closest in spirit (porcelain, graphite,
+an editorial sans and a technical mono), so this cycle is a restyle rather than a
+redesign. Nothing about the model, the copy, the routes or the interaction changed.
+
+### What shipped
+
+- **Type.** Inter for language and IBM Plex Mono for system labels, self-hosted
+  from `src/assets/fonts` so the product still makes no third-party requests.
+- **Palette.** Porcelain and forest ink in light, the family's forest night in
+  dark. The signal colour moves from rust to the family's sky and stays the
+  single accent: the current-state marker, the active rung, nothing decorative.
+- **Shape.** Structure still comes from rules, grids and space. Surfaces that
+  float (panels, dialogs, the toast) take rounded corners and a soft shadow;
+  buttons, tags and segmented controls take pill shapes; the primary action is
+  the family's forest gradient, mint in dark.
+- **Around the edges.** A faint dot grid behind the page; a family tile for the
+  favicon and the header mark; a link-preview card (`public/og.png`, excluded
+  from the SPA rewrite in `vercel.json` so it is served as an image); and a
+  credit to John Jayasankar and Labs in the footer and on the opening screen.
+
+### Bug the restyle introduced, and the fix
+
+`body` set `font-variant-numeric: tabular-nums` for the whole product. With the
+system font that only touched digits. Inter's tabular set also widens the
+hyphen, so every hyphenated word read "month - end". Tabular figures now apply
+where numbers line up (readouts, numeric fields, tables and the `tabular-nums`
+utility) rather than globally.
+
+### Verified
+
+- **The grey ladder was re-solved against the new grounds**, so every step
+  still clears 4.5:1 on the worst ground it can land on. Light: 15.7 / 8.9 /
+  6.3 / 5.0. Dark: 14.5 / 10.3 / 6.7 / 4.9. The signal is 7.3 in light and 8.3
+  in dark at worst, and above 6 on its own soft tint.
+- **Measured on the rendered page in both themes.** The library, methodology
+  and brief have no text under 4.5:1: lowest 5.34 in light, 4.93 in dark. On the
+  assessment sheet the only readings under 4.5 are the six that were there
+  before, all deliberately dimmed: the disabled Undo and Redo, and the autonomy
+  rungs beyond the recommendation.
+- Every selector and layout rule of the previous stylesheet is still present.
+- 262 tests pass. Clean typecheck, clean lint, clean production build.
+- Screenshots of every view before and after, in light and dark and at 390px:
+  no page overflow and no console errors.
+
+---
+
 ## Cycle 9 — Guided review: the instrument asks the questions
 
 **The imbalance found.** Eight cycles went into what AgentFit *says*: gates,

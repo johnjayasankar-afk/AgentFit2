@@ -2,7 +2,7 @@
   "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/((?!sw\\.js|manifest\\.webmanifest|favicon\\.svg|assets/).*)",
+      "source": "/((?!sw\\.js|manifest\\.webmanifest|favicon\\.svg|og\\.png|assets/).*)",
       "destination": "/"
     }
   ],

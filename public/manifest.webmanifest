@@ -4,7 +4,7 @@
   "description": "Scores economics, reversibility, system access, and autonomy before anyone writes an orchestration graph.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f2f1ec",
-  "theme_color": "#f2f1ec",
+  "background_color": "#f8f6f1",
+  "theme_color": "#f8f6f1",
   "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
 }
