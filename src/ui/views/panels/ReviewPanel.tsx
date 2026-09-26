@@ -145,7 +145,7 @@ export function ReviewPanel({
             <button
               className="btn btn-quiet text-faint hover:text-[var(--ink)]"
               onClick={onSkip}
-              title="Leave this at its preset and move on — it stays unreviewed"
+              title="Leave this at its preset and move on: it stays unreviewed"
             >
               Not sure yet
             </button>

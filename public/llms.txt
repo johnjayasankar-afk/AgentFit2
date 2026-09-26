@@ -1,0 +1,27 @@
+# AgentFit
+
+> A local-first decision instrument. It scores a workflow on economic opportunity,
+> technical readiness, controllability and risk, and recommends how much autonomy
+> that workflow has earned, before anyone writes an orchestration graph.
+
+Everything runs in the browser. Assessments are stored on the device; there is no
+account, no telemetry and no network call.
+
+## What it produces
+
+- A fit score out of 100, and the confidence that comes from how many of the 20
+  dimensions have been reviewed rather than left at a preset.
+- A recommended autonomy rung, from human-led process through assistive agent to
+  bounded autonomy, with the reason it stopped there.
+- A brief you can share as a link, which carries the assessment in the fragment and
+  therefore never reaches a server.
+
+## Pages
+
+- [The instrument](https://agent-fit2.vercel.app/)
+- [Method](https://agent-fit2.vercel.app/#/method): what each dimension means and how it is weighted.
+
+## Elsewhere
+
+- [Labs](https://labs.johnjayasankar.com/)
+- Contact: johnjayasankar@gmail.com

@@ -712,3 +712,6 @@
     content: '';
   }
 }
+
+/* The Labs material, last so a surface that opts into .gl takes it. */
+@import './labs-glass.css';

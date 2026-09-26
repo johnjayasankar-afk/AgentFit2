@@ -73,7 +73,7 @@ export function ShareSheet({
       // Clipboard access can be refused outright. Selecting the text is a
       // working answer, and better than a dead button.
       field.current?.select()
-      store.notify('Clipboard blocked — the link is selected, copy it with ⌘C.')
+      store.notify('Clipboard blocked: the link is selected, copy it with ⌘C.')
     }
   }
 

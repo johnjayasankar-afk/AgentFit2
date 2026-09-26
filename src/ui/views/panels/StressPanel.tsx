@@ -396,7 +396,7 @@ export function StressPanel({
           )}
 
           <div className="mt-6">
-            <div className="mono-sm text-faint mb-1">Highest leverage — capabilities you can build</div>
+            <div className="mono-sm text-faint mb-1">Highest leverage: capabilities you can build</div>
             {sensitivity.highest.length === 0 ? (
               <p className="text-muted border-hair border-t pt-3 text-[12.5px] leading-[1.55]">
                 Every capability dimension is already at its most favourable value. What remains is
@@ -419,7 +419,7 @@ export function StressPanel({
 
           {sensitivity.constraints.length > 0 && (
             <div className="mt-8">
-              <div className="mono-sm text-faint mb-1">Load-bearing constraints — not improvements</div>
+              <div className="mono-sm text-faint mb-1">Load-bearing constraints: not improvements</div>
               <p className="text-muted mb-1 max-w-[58ch] text-[11.5px] leading-[1.55]">
                 These dominate the outcome and cannot be invested in. They are listed so the ceiling
                 is explicable — changing them means changing the workflow, not building something.

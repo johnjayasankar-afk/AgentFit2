@@ -78,7 +78,7 @@ function Header() {
         <button
           className="flex shrink-0 items-center gap-3"
           onClick={() => store.setView('workspace')}
-          aria-label="AgentFit — go to assessment"
+          aria-label="AgentFit · go to assessment"
         >
           <span
             className="brand-tile mono-sm grid h-[26px] w-[26px] shrink-0 place-items-center tracking-normal"

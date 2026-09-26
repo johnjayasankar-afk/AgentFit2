@@ -432,7 +432,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     // A shipped example is never overwritten. Editing one forks a copy and
     // leaves the original in the library for reference.
     if (storage === 'unavailable') {
-      notify('Saving is unavailable — this browser is blocking local storage. Export to keep this work.')
+      notify('Saving is unavailable: this browser is blocking local storage. Export to keep this work.')
       return
     }
 
@@ -470,7 +470,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       )
     } catch {
       setStorage('unavailable')
-      notify('Could not save — this browser is blocking local storage. Export to keep this work.')
+      notify('Could not save: this browser is blocking local storage. Export to keep this work.')
     }
   }, [current, refresh, notify, storage])
 
@@ -563,7 +563,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         input: structuredClone(found.input),
         notes: found.notes,
       }))
-      notify('Restored — save to keep it, or undo to go back.')
+      notify('Restored: save to keep it, or undo to go back.')
     },
     [current.revisions, remember, snapshot, notify],
   )
